@@ -398,14 +398,13 @@ async function printSwanTicket(id){
  try{
   const html2pdf=await loadSwanPdfLibrary();
   const clean=card.cloneNode(true);
-  const qrCanvas=card.querySelector('.swan-qr canvas');
-  const qrImage=qrCanvas.toDataURL('image/png');
+  const qrImage=qr.toDataURL('image/png');
   clean.querySelector('.swan-qr').innerHTML='<img src="'+qrImage+'" alt="Ticket QR code">';
   clean.querySelector('.swan-ticket-actions')?.remove();
   const wrapper=document.createElement('div');
-  wrapper.style.cssText='width:180mm;min-height:75mm;margin:0 auto;padding:0;background:#fff;display:flex;align-items:stretch;justify-content:center;font-family:Arial,sans-serif;';
+  wrapper.style.cssText='width:180mm;height:75mm;min-height:75mm;margin:0;padding:0;background:#fff;display:flex;align-items:stretch;justify-content:center;overflow:hidden;font-family:Arial,sans-serif;box-sizing:border-box;';
   const style=document.createElement('style');
-  style.textContent='.swan-ticket{width:180mm!important;max-width:180mm!important;min-height:75mm!important;height:auto!important;margin:0!important;display:flex!important;position:relative!important;overflow:hidden!important;border-radius:4mm!important;box-shadow:none!important;break-inside:avoid!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}.swan-ticket-main{flex:1;min-width:0;padding:7mm!important;display:flex;flex-direction:column;justify-content:space-between}.swan-ticket-brand{display:flex;align-items:center;gap:3mm;font-size:14pt;letter-spacing:1.4pt}.swan-ticket-brand small{display:block;font-size:6pt;letter-spacing:1.6pt}.swan-ticket-mark{font-size:22pt}.swan-ticket-event{font: bold 20pt/1.05 Georgia,serif;margin:5mm 0 3mm;overflow-wrap:anywhere}.swan-ticket-meta{display:flex;flex-wrap:wrap;gap:2mm 6mm;font-size:8pt}.swan-ticket-bottom{display:flex;flex-wrap:wrap;gap:5mm;margin-top:5mm}.swan-ticket-bottom small,.swan-ticket-stub>small{display:block;font-size:6pt;letter-spacing:1pt}.swan-ticket-bottom b{display:block;font-size:8pt;margin-top:1mm;overflow-wrap:anywhere}.swan-ticket-stub{width:42mm!important;flex:0 0 42mm!important;border-left:1px dashed currentColor;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:2mm;padding:4mm 2mm!important}.swan-ticket-category{font-size:8pt;font-weight:bold;letter-spacing:1pt;text-align:center}.swan-qr{width:31mm!important;height:31mm!important;padding:1mm!important;background:#fff!important;display:grid;place-items:center}.swan-qr img{display:block;width:29mm!important;height:29mm!important;max-width:none!important}.swan-ticket-stub>b{font-size:7pt;letter-spacing:.6pt;padding:2mm 3mm;border:1px solid currentColor;border-radius:1mm}.swan-regular{background:linear-gradient(125deg,#f4edff,#c6f3ef,#fff0dc,#e6d8ff)!important;color:#101323!important;border:1px solid #b9a8d2!important}.swan-vip{background:linear-gradient(130deg,#08090d,#242630 55%,#08090d)!important;color:#f3f0e9!important;border:1px solid #aeb3c2!important}.swan-vip .swan-ticket-category,.swan-vip .swan-ticket-stub>b{color:#e4e7ee;border-color:#aeb3c2}.swan-regular .swan-ticket-category,.swan-regular .swan-ticket-stub>b{color:#24233b;border-color:#756b91}';
+  style.textContent='.swan-ticket{box-sizing:border-box!important;width:180mm!important;max-width:180mm!important;height:75mm!important;min-height:75mm!important;max-height:75mm!important;margin:0!important;display:flex!important;position:relative!important;overflow:hidden!important;border-radius:0!important;box-shadow:none!important;break-inside:avoid!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}.swan-ticket-main{flex:1;min-width:0;padding:6mm!important;display:flex;flex-direction:column;justify-content:space-between}.swan-ticket-brand{display:flex;align-items:center;gap:3mm;font-size:14pt;letter-spacing:1.4pt}.swan-ticket-brand small{display:block;font-size:6pt;letter-spacing:1.6pt}.swan-ticket-mark{font-size:22pt}.swan-ticket-event{font:bold 20pt/1.05 Georgia,serif;margin:4mm 0 2mm;overflow-wrap:anywhere}.swan-ticket-meta{display:flex;flex-wrap:wrap;gap:2mm 6mm;font-size:8pt}.swan-ticket-bottom{display:flex;flex-wrap:wrap;gap:5mm;margin-top:4mm}.swan-ticket-bottom small,.swan-ticket-stub>small{display:block;font-size:6pt;letter-spacing:1pt}.swan-ticket-bottom b{display:block;font-size:8pt;margin-top:1mm;overflow-wrap:anywhere}.swan-ticket-stub{width:42mm!important;flex:0 0 42mm!important;border-left:1px dashed currentColor;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:2mm;padding:3mm 2mm!important;box-sizing:border-box!important}.swan-ticket-category{font-size:8pt;font-weight:bold;letter-spacing:1pt;text-align:center}.swan-qr{width:31mm!important;height:31mm!important;min-width:31mm!important;min-height:31mm!important;padding:1mm!important;background:#fff!important;display:grid;place-items:center;box-sizing:border-box!important}.swan-qr img{display:block;width:29mm!important;height:29mm!important;max-width:none!important}.swan-ticket-stub>b{font-size:7pt;letter-spacing:.6pt;padding:2mm 3mm;border:1px solid currentColor;border-radius:1mm}.swan-regular{background:linear-gradient(125deg,#f4edff,#c6f3ef,#fff0dc,#e6d8ff)!important;color:#101323!important;border:1px solid #b9a8d2!important}.swan-vip{background:linear-gradient(130deg,#08090d,#242630 55%,#08090d)!important;color:#f3f0e9!important;border:1px solid #aeb3c2!important}.swan-vip .swan-ticket-category,.swan-vip .swan-ticket-stub>b{color:#e4e7ee;border-color:#aeb3c2}.swan-regular .swan-ticket-category,.swan-regular .swan-ticket-stub>b{color:#24233b;border-color:#756b91}';
   wrapper.appendChild(style);
   wrapper.appendChild(clean);
   document.body.appendChild(wrapper);
@@ -413,11 +412,11 @@ async function printSwanTicket(id){
   const filename='SWAN-TICKET-'+ticketNo.replace(/[^A-Z0-9-]/gi,'')+'.pdf';
   try{
    await html2pdf().set({
-    margin:[12,12,12,12],
+    margin:0,
     filename,
-    image:{type:'jpeg',quality:0.98},
-    html2canvas:{scale:2,useCORS:true,backgroundColor:'#ffffff',logging:false},
-    jsPDF:{unit:'mm',format:'a4',orientation:'portrait'},
+    image:{type:'jpeg',quality:0.99},
+    html2canvas:{scale:3,useCORS:true,backgroundColor:null,logging:false,scrollX:0,scrollY:0},
+    jsPDF:{unit:'mm',format:[180,75],orientation:'landscape',compress:true},
     pagebreak:{mode:['avoid-all']}
    }).from(wrapper).save();
    toast('Your ticket PDF has been downloaded');
