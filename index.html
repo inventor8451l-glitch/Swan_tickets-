@@ -104,7 +104,145 @@ body{background:radial-gradient(ellipse at 15% 0,#15134a 0,transparent 34%),radi
 
 /* Fast admin QR check-in */
 .scanner-panel{padding:15px;margin:16px 0;border:1px solid #f0c45e38}.scanner-head{display:flex;justify-content:space-between;align-items:center;gap:10px}.scanner-head h2{font:25px Georgia;margin:4px 0}.scanner-camera{width:100%;min-height:220px;margin:13px 0;border-radius:17px;overflow:hidden;background:#080b09;border:1px solid #f0c45e35}.scanner-camera video{object-fit:cover!important}.scanner-actions{display:flex;gap:8px;flex-wrap:wrap}.scanner-actions .btn{flex:1;min-width:130px}.app-modal{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(5,7,6,.84);backdrop-filter:blur(12px)}.app-modal.show{display:flex}.app-modal-card{width:min(100%,460px);max-height:min(82vh,720px);overflow:auto;border:1px solid #f0c45e65;border-radius:24px;padding:21px;background:linear-gradient(145deg,#382719,#1b1712 72%);box-shadow:0 25px 90px #000c,0 0 35px #f0c45e12}.app-modal-card.success{border-color:#54d69a;background:linear-gradient(145deg,#173d2d,#171d18 80%)}.app-modal-card.danger{border-color:#ff7c72;background:linear-gradient(145deg,#4a211e,#201513 80%)}.app-modal-kicker{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);font-weight:900}.app-modal-card h2{font:clamp(23px,6vw,30px)/1.08 Georgia;margin:9px 0 10px}.app-modal-message{font-size:13px;line-height:1.7;color:#e7dfd1}.app-modal-details{margin-top:14px}.app-modal-details .scan-meta{margin-top:0}.app-modal-actions{display:flex;justify-content:flex-end;margin-top:19px}.app-modal-actions .btn{min-width:120px}.app-modal-card .scan-meta div{background:#0003}.app-modal-card .scan-meta span{color:#d0bfa6}.app-modal-card .scan-meta b{color:#fff8eb}#scanResult{display:none}.scan-result{padding:15px;border-radius:16px;margin:12px 0;border:1px solid #ffffff24;background:#ffffff08}.scan-result.accepted{border-color:#54d69a;background:#123b2a}.scan-result.rejected{border-color:#ff7c72;background:#421d1b}.scan-result strong{display:block;font-size:18px;letter-spacing:.04em;margin-bottom:5px}.scan-result small{color:#d6d2c8}.scan-meta{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.scan-meta div{padding:9px;border-radius:11px;background:#0002}.scan-meta span{display:block;color:#c4b7a5;font-size:10px}.scan-meta b{font-size:12px;overflow-wrap:anywhere}.scan-log{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid #ffffff12;font-size:11px}.scan-log b{display:block}.scan-field{width:100%;border:1px solid #f0c45e38;border-radius:12px;padding:12px;background:#ffffff09;color:#fff;margin:9px 0}.scan-counts{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.scan-counts span{padding:7px 10px;border-radius:99px;background:#ffffff0a;border:1px solid #ffffff18;font-size:11px}.scan-hint{font-size:11px;color:var(--muted);line-height:1.5}
-</style></head><body><div class="app"><header class="top"><div class="brand" onclick="go('home')"><div class="mark">S</div><div><b>SWAN <span>TICKETS</span></b><small>GO WHERE YOU FEEL</small></div></div><div class="top-actions"><button class="round search-trigger" aria-label="Search events" onclick="go('events');setTimeout(()=>document.getElementById('search')?.focus(),80)"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg></button><button class="round" aria-label="Your cart" onclick="go('cart')"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M1 1h4l2.7 13.1a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg></button></div></header><main>
+</style>
+<style id="swan-premium-responsive-theme">
+/* SWAN TICKETS — champagne, ivory and charcoal theme; responsive desktop system */
+:root{
+ --bg:#11120f;--panel:#20211d;--glass:rgba(38,38,32,.88);
+ --line:rgba(231,210,166,.18);--gold:#d8b66a;--gold2:#f0dca7;
+ --mint:#c5b58e;--text:#f6f1e7;--muted:#b9b1a2;
+ --swan-ink:#11120f;--swan-surface:#1b1c18;--swan-surface-2:#25251f;
+ --swan-gold:#d8b66a;--swan-ivory:#f6f1e7;
+}
+html{background:#11120f;color-scheme:dark}
+body{
+ background:
+  radial-gradient(ellipse at 12% -10%,rgba(190,153,82,.13),transparent 34%),
+  radial-gradient(ellipse at 92% 22%,rgba(116,102,73,.10),transparent 28%),
+  linear-gradient(145deg,#11120f 0%,#171813 52%,#10110e 100%)!important;
+ color:var(--text)!important;
+}
+.app{background:transparent!important;border-color:rgba(216,182,106,.17)!important}
+.top,.topbar{background:rgba(17,18,15,.91)!important;border-color:var(--line)!important}
+.brand-name span,.brand small,.eyebrow,.section .link,.link,.price,.detailtitle em,
+.nav button.active,.bottom-nav button.active{color:var(--gold)!important}
+.mark,.brand-mark{color:var(--gold)!important;border-color:var(--gold)!important;box-shadow:inset 0 0 18px #d8b66a18!important}
+.btn{background:linear-gradient(125deg,#f0dca7,#d0aa58)!important;color:#211d13!important;box-shadow:0 7px 24px #d8b66a18!important}
+.btn.ghost,.chip,.search,.home-search,.field input,.field select,.field textarea,
+.scan-field,.qty button,.round,.icon-btn{
+ background-color:rgba(255,255,255,.045)!important;color:var(--text)!important;border-color:var(--line)!important
+}
+.chip{color:#d7d0c2!important}.chip.active{background:var(--gold)!important;color:#211d13!important}
+.glass,.card,.event-card,.adminitem,.ticketopt,.cartline{
+ background:linear-gradient(145deg,rgba(54,53,44,.82),rgba(29,30,25,.94))!important;
+ border-color:var(--line)!important;box-shadow:0 15px 38px #0004!important
+}
+.notice,.status,.round-arrow,.round{border-color:#d8b66a55!important}
+.notice{background:rgba(216,182,106,.09)!important;color:#e8dfcc!important}
+.poster:after{background:linear-gradient(180deg,transparent 32%,rgba(17,18,15,.94))!important}
+.tag,.poster-tag{background:rgba(23,23,19,.88)!important;border-color:var(--line)!important;color:var(--swan-ivory)!important}
+.featured-widget,.home-search{background-color:#22231e!important;border-color:var(--line)!important}
+.featured-widget{box-shadow:0 18px 48px #0005!important}
+.trending-wheel .wheel-card{background:#24241e!important;border-color:#d8b66a55!important;box-shadow:0 18px 38px #0009!important}
+.trending-wheel .wheel-poster:after{background:linear-gradient(180deg,transparent 45%,#11120fe8)!important}
+.trending-wheel .wheel-info p{color:#c3bbad!important}
+.trending-wheel .wheel-info b{color:var(--gold2)!important}
+.trending-wheel .wheel-card.is-left,.trending-wheel .wheel-card.is-right{filter:brightness(.76)!important}
+.trending-wheel .wheel-control{background:#191a15!important;border-color:var(--line)!important}
+.trending-wheel .wheel-dots button.active{background:var(--gold)!important}
+.bottom-nav,.nav{
+ background:rgba(20,21,17,.96)!important;border-color:var(--line)!important;
+ box-shadow:0 -10px 32px #0004!important;backdrop-filter:blur(22px)
+}
+.bottom-nav button,.nav button{color:#aaa394!important}
+.floating-cart{
+ background:linear-gradient(145deg,#e5c77e,#b99145)!important;
+ border:1px solid #f3dfad!important;color:#211d13!important;
+ box-shadow:0 12px 34px #0008!important
+}
+.floating-cart .fc-icon,.floating-cart .fc-count{color:#211d13!important}
+.floating-cart .fc-count{background:#fff3d4!important;border:1px solid #8e713b!important}
+.app-modal-card{background:linear-gradient(145deg,#383326,#1d1e18 78%)!important;border-color:#d8b66a88!important}
+.app-modal-card.success{background:linear-gradient(145deg,#203b2d,#171d18 80%)!important}
+.app-modal-card.danger{background:linear-gradient(145deg,#472722,#201715 80%)!important}
+.field label{color:#d8cfbd!important}
+input:focus,select:focus,textarea:focus,button:focus-visible{outline:2px solid var(--gold)!important;outline-offset:2px}
+.swan-ticket-regular{background:linear-gradient(125deg,#f4eddb,#d8d0b8,#f9f1dc,#e1d5b9)!important}
+.swan-ticket-vip{background:linear-gradient(130deg,#090a08,#282923 55%,#090a08)!important}
+#termsAndConditions{background:linear-gradient(145deg,#282820,#1b1c17)!important}
+#termsAndConditions summary{color:var(--gold)!important}
+#termsAndConditions .terms-copy{color:#e6dfd1!important}
+#termsAndConditions .terms-copy b{color:var(--gold2)!important}
+.site-footer{color:var(--muted)!important}
+
+/* Small screens */
+@media(max-width:699px){
+ body{padding:0!important}
+ .app{width:100%;max-width:100%!important;border:0!important;border-radius:0!important}
+ .top,.topbar{padding-left:15px!important;padding-right:15px!important}
+ .screen{width:100%;padding-left:15px!important;padding-right:15px!important}
+ .grid,.home-event-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ .bottom-nav{width:100%!important;left:0!important;transform:none!important;bottom:0!important;border-radius:0!important}
+ .floating-cart{right:17px!important}
+}
+
+/* Tablets and small laptops */
+@media(min-width:700px) and (max-width:1099px){
+ body{padding:16px!important}
+ .app{max-width:100%!important;border-radius:24px!important}
+ .screen{max-width:1000px!important;margin:0 auto!important;padding:26px 30px 130px!important}
+ .home-event-grid,.grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:17px!important}
+ .featured-widget{min-height:340px!important}
+ .bottom-nav{width:min(560px,calc(100% - 40px))!important;left:50%!important;transform:translateX(-50%)!important;bottom:16px!important;border:1px solid var(--line)!important;border-radius:18px!important}
+ .floating-cart{right:24px!important;bottom:28px!important}
+}
+
+/* Desktop and wide monitors */
+@media(min-width:1100px){
+ body{padding:0!important;min-height:100vh}
+ .app{width:100%!important;max-width:1560px!important;min-height:100vh!important;margin:0 auto!important;border:0!important;border-radius:0!important;overflow:visible!important}
+ .top,.topbar{padding:18px clamp(28px,5vw,76px)!important}
+ main{width:100%}
+ .screen{width:min(100% - 96px,1320px)!important;margin:0 auto!important;padding:30px 0 150px!important}
+ #home{width:min(100% - 96px,1380px)!important}
+ .home-search{max-width:680px!important;margin:0 auto 22px!important}
+ .featured-widget{height:clamp(340px,34vw,480px)!important;min-height:340px!important;border-radius:28px!important}
+ .featured-content{max-width:410px!important}
+ .section{margin-top:36px!important}
+ .grid,.home-event-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:20px!important}
+ .event-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:20px!important}
+ .poster{height:190px!important}
+ .info,.event-info{padding:16px!important}
+ .info h3,.event-info h3{font-size:19px!important}
+ .trending-wheel{height:390px!important;margin-top:12px!important}
+ .wheel-card{left:27%!important;width:46%!important;height:330px!important}
+ .wheel-poster{height:205px!important}
+ .detailposter,.event-detail-poster{height:390px!important}
+ #detailbody{max-width:1050px!important;margin:0 auto!important}
+ #cartbody,#checkout>.glass,#payment>.glass{max-width:850px!important;margin-left:auto!important;margin-right:auto!important}
+ #cartbody .cartline{padding:20px!important}
+ #checkout{max-width:900px!important}
+ #checkout>.glass{padding:26px!important}
+ #help{max-width:1000px!important}
+ #termsAndConditions{padding:28px!important}
+ #termsAndConditions .terms-copy{font-size:14px!important;line-height:1.85!important}
+ #admin{max-width:1320px!important}
+ #admin .stats{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:16px!important}
+ #admin .scanner-panel{padding:24px!important}
+ #admin .scanner-camera{max-width:720px!important;margin-left:auto!important;margin-right:auto!important}
+ .bottom-nav{position:fixed!important;left:50%!important;transform:translateX(-50%)!important;bottom:22px!important;width:430px!important;max-width:calc(100% - 48px)!important;border:1px solid var(--line)!important;border-radius:20px!important;padding:10px 16px!important}
+ .floating-cart{position:fixed!important;right:max(30px,calc((100vw - 1500px)/2 + 28px))!important;bottom:26px!important;width:auto!important;height:58px!important;min-width:58px!important;padding:0 18px!important;border-radius:999px!important;display:flex!important;gap:10px!important}
+ .floating-cart .fc-label,.floating-cart .fc-total,.floating-cart .fc-arrow{display:inline!important;color:#211d13!important}
+ .floating-cart .fc-count{position:static!important}
+ .site-footer{max-width:1320px!important;margin:0 auto!important;padding:22px 0 105px!important}
+}
+@media(min-width:1600px){
+ .screen{width:min(100% - 140px,1420px)!important}
+ #home{width:min(100% - 140px,1460px)!important}
+ .grid,.home-event-grid,.event-grid{gap:24px!important}
+}
+</style>
+</head><body><div class="app"><header class="top"><div class="brand" onclick="go('home')"><div class="mark">S</div><div><b>SWAN <span>TICKETS</span></b><small>GO WHERE YOU FEEL</small></div></div><div class="top-actions"><button class="round search-trigger" aria-label="Search events" onclick="go('events');setTimeout(()=>document.getElementById('search')?.focus(),80)"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg></button><button class="round" aria-label="Your cart" onclick="go('cart')"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M1 1h4l2.7 13.1a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg></button></div></header><main>
 <section class="screen active" id="home"><div class="home-search"><input id="homeSearch" type="search" placeholder="Search events by title..." oninput="syncHomeSearch()"><button onclick="runHomeSearch()" aria-label="Search"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg></button></div><div class="featured-widget" id="featuredCarousel" aria-label="Featured events carousel"></div><div class="featured-dots" id="featuredDots" aria-label="Choose featured event"></div><div class="chips category-strip" id="homechips"></div><div class="section"><div><h2>Upcoming Events</h2></div><button class="link" onclick="go('events')">View all →</button></div><div class="grid home-event-grid" id="homeEventGrid"></div><div class="section"><div><h2>Trending Now</h2></div><button class="link" onclick="go('events')">View all →</button></div><div class="trending-wheel" id="trendingEventGrid" aria-label="Trending events carousel"><div class="wheel-track" id="trendingWheelTrack"></div><button class="wheel-control prev" onclick="moveTrending(-1)" aria-label="Previous trending event">‹</button><button class="wheel-control next" onclick="moveTrending(1)" aria-label="Next trending event">›</button><div class="wheel-dots" id="trendingWheelDots"></div></div></section>
 <section class="screen" id="events"><div class="eyebrow">The good stuff</div><h1 style="font:34px Georgia;margin:5px 0">Explore events</h1><input class="search" id="search" placeholder="Search events, venues..." oninput="renderEvents()"><div class="chips" id="eventchips"></div><div class="section"><div><div class="eyebrow">Discover what's on</div><h2>Coming up</h2></div><span class="muted" id="count"></span></div><div class="grid" id="eventgrid"></div></section>
 <section class="screen" id="detail"><button class="link" onclick="go('events')">← All events</button><div id="detailbody"></div></section>
