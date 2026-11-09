@@ -410,7 +410,13 @@ input:focus,select:focus,textarea:focus,button:focus-visible{outline:2px solid v
 </div>
 <div class="section"><div><div class="eyebrow">Content management</div><h2>Create an event</h2></div></div><div class="glass" style="padding:14px"><div class="field"><label>Event title</label><input id="ntitle" placeholder="Event name"></div><div class="field"><label>Category</label><select id="ncat"><option>Music</option><option>Food</option><option>Sports</option><option>Nightlife</option><option>Culture</option><option>Business</option></select></div><div class="field"><label>Venue / town</label><input id="nvenue" placeholder="Venue, town"></div><div class="field"><label>Date</label><input id="ndate" type="date"></div><div class="field"><label>Start time</label><input id="ntime" type="time"></div><div class="field"><label>Event pictures and poster</label><div class="upload-zone" onclick="document.getElementById('nimages').click()"><div class="upload-icon">＋</div><b>Choose pictures from your phone</b><span>Pick multiple photos at once. JPG, PNG, WEBP and other supported image formats.</span><small>No image links or URLs needed.</small></div><input id="nimages" type="file" accept="image/*" multiple hidden onchange="previewUploads(this.files)"><div id="uploadpreview" class="upload-preview"></div></div><div class="field"><label>Ticket types for this event</label><p class="muted" style="margin:4px 0 10px">Choose one or more ticket categories and set a price and quantity for each.</p><div id="ticketTypeRows"></div><button type="button" class="btn ghost full" style="margin-top:9px" onclick="addTicketTypeRow()">＋ Add another ticket type</button></div><div class="field"><label>Description</label><textarea id="ndesc" rows="3" placeholder="Event details"></textarea></div><button class="btn full" onclick="addEvent()">Publish event</button></div><div class="section"><div><div class="eyebrow">Payment operations</div><h2>Orders to review</h2></div><button class="link" onclick="exportCSV()">Export PDF</button></div><div id="adminorders"></div><div class="section"><div><div class="eyebrow">Inventory</div><h2>Manage events</h2></div></div><div id="adminevents"></div>
 <div class="section"><div><div class="eyebrow">Email verification</div><h2>Test ticket delivery</h2></div></div>
-<div class="glass adminitem"><p class="muted">Send a clearly marked sample ticket PDF to the configured test inbox. This creates no payment, order or real ticket.</p><button class="btn full" id="testTicketEmailBtn" onclick="sendTestTicketEmail()">Send test ticket email</button><p class="muted" id="testTicketEmailStatus" aria-live="polite">Test inbox: inventor8451l@gmail.com</p></div>
+<div class="glass adminitem">
+ <p class="muted">Send a sample using the exact SWAN ticket artwork. This creates no payment, order or real ticket.</p>
+ <div class="field"><label for="testTicketRecipient">Recipient email address</label><input id="testTicketRecipient" type="email" inputmode="email" autocomplete="email" placeholder="Enter the email address" required></div>
+ <div class="field"><label for="testTicketCategory">Ticket design to test</label><select id="testTicketCategory"><option value="VVIP">VVIP</option><option value="VIP">VIP</option><option value="Early Bird">Early Bird</option><option value="Regular" selected>Regular</option></select></div>
+ <button class="btn full" id="testTicketEmailBtn" onclick="sendTestTicketEmail()">Send test ticket email</button>
+ <p class="muted" id="testTicketEmailStatus" aria-live="polite">Enter a recipient and choose the ticket design to test.</p>
+</div>
 <div class="section"><div><div class="eyebrow">System upkeep</div><h2>Storage & database maintenance</h2></div></div>
 <div class="glass adminitem">
  <p class="muted">Automatic maintenance runs every Thursday at 3:00 AM East Africa Time. It removes only technical job-run logs older than 30 days. Orders, payment records, tickets, QR codes, scan history, events and event images are not touched.</p>
@@ -482,7 +488,7 @@ function loadSwanPdfLibrary(){
  });
  return swanPdfLibraryPromise;
 }
-async function printSwanTicket(id){
+async function printSwanTicket(id,emailMode=false){
  const card=document.getElementById('swan-ticket-'+id);
  if(!card)return toast('Ticket is not available');
  const qrNode=card.querySelector('.swan-qr canvas,.swan-qr img');
@@ -528,6 +534,16 @@ async function printSwanTicket(id){
    bars.forEach((c,i)=>rect(5+i*9,5,6,2,c));
    rect(5,68,47,1,p.accent);
   }
+  // Restore the SWAN emblem in the exported PDF.
+  const swanColor='#'+p.ink.map(v=>v.toString(16).padStart(2,'0')).join('');
+  const swanSvg='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><path d="M13 91c19-4 34-14 43-29 8-13 7-25-5-34-8-6-9-14-3-20 7-7 19-3 22 6 3 7-2 14-9 18 15 8 31 3 49-20-7 23-21 41-44 52-18 9-35 19-53 27Z" fill="'+swanColor+'"/><path d="m43 12 8-10 9 10 11-4-3 14H35l-3-14 11 4Z" fill="'+swanColor+'"/><path d="M16 92c18-1 36-8 51-19" fill="none" stroke="'+swanColor+'" stroke-width="3" opacity=".5"/></svg>';
+  const swanImage=new Image();
+  const swanPng=await new Promise((resolve,reject)=>{
+   swanImage.onload=()=>{const canvas=document.createElement('canvas');canvas.width=240;canvas.height=240;const ctx=canvas.getContext('2d');ctx.drawImage(swanImage,0,0,240,240);resolve(canvas.toDataURL('image/png'))};
+   swanImage.onerror=reject;
+   swanImage.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(swanSvg);
+  });
+  doc.addImage(swanPng,'PNG',22.5,7.5,12,12,undefined,'FAST');
   text('SWAN',28.5,29,15,p.ink,true,'times');
   text('T I C K E T S',28.5,36,4.6,p.accent,true);
   line(12,40,45,40,p.accent,.3);
@@ -559,6 +575,11 @@ async function printSwanTicket(id){
   text('TICKET NO.',160.5,52,3.0,p.muted,true);
   const noSize=fit(ticketNo,32,4.0,2.7,'helvetica',true);text(ticketNo,160.5,57,noSize,p.ink,true);
   line(147,61,174,61,p.edge,.2);text('ONE ENTRY',160.5,67,3.1,p.accent,true);
+  if(emailMode){
+   doc.setFont('helvetica','bold');doc.setFontSize(4.8);doc.setTextColor(205,62,48);
+   doc.text('TEST COPY - NOT VALID FOR ENTRY',90,73,{align:'center'});
+   return doc.output('datauristring');
+  }
   doc.save('SWAN-TICKET-'+ticketNo.replace(/[^A-Z0-9-]/gi,'')+'.pdf');
   toast('Your ticket PDF has been downloaded');
  }catch(err){console.error('SWAN PDF generation failed:',err);toast(err.message||'Could not generate the ticket PDF')}
@@ -677,18 +698,37 @@ async function loadAdminOrders(){
 async function sendTestTicketEmail(){
  if(!s.admin)return toast('Sign in as an administrator first');
  const button=document.getElementById('testTicketEmailBtn'),status=document.getElementById('testTicketEmailStatus');
+ const recipient=(document.getElementById('testTicketRecipient')?.value||'').trim();
+ const category=(document.getElementById('testTicketCategory')?.value||'Regular').trim();
+ if(!recipient||!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(recipient))return toast('Enter a valid recipient email address');
+ if(!['VVIP','VIP','Early Bird','Regular'].includes(category))return toast('Choose a supported ticket category');
  if(button.disabled)return;
- button.disabled=true;button.textContent='Sending sample PDF…';status.textContent='Checking administrator session and sending the sample email…';
+ button.disabled=true;button.textContent='Preparing exact ticket design…';status.textContent='Generating the selected SWAN ticket template…';
+ const sampleId='email-test-'+Date.now();
+ const holder=document.createElement('div');holder.id='swan-email-test-holder';holder.style.cssText='position:fixed;left:-10000px;top:0;width:720px;display:block;z-index:-1';
+ const now=new Date();
+ const testTicket={id:sampleId,ticket_types:{name:category},events:{title:'SWAN TICKETS SAMPLE EVENT',starts_at:now.toISOString(),venue:'Sample venue'},attendee_name:'TEST ATTENDEE',ticket_number:'TEST-ONLY',bookingReference:'TEST-NOT-VALID',status:'TEST ONLY'};
+ holder.innerHTML='<div class="swan-ticket-list">'+ticketCardMarkup(testTicket)+'</div>';
+ document.body.appendChild(holder);
  try{
+  await ensureQrLibrary();
+  const qrTarget=document.getElementById('swan-qr-'+sampleId);
+  if(!qrTarget)throw new Error('Could not prepare the sample QR area');
+  qrTarget.innerHTML='';
+  new QRCode(qrTarget,{text:'SWAN-EMAIL-TEST-NOT-VALID',width:128,height:128,colorDark:'#101010',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M});
+  const pdfData=await printSwanTicket(sampleId,true);
+  if(!pdfData||!pdfData.startsWith('data:application/pdf;base64,'))throw new Error('The sample ticket PDF could not be generated');
+  const pdfBase64=pdfData.split(',')[1];
   const {data,error}=await supabaseClient.auth.getSession();if(error)throw error;
   const token=data.session?.access_token;if(!token)throw new Error('Your admin session has expired. Sign in again.');
-  const response=await fetch(SUPABASE_URL+'/functions/v1/admin-test-ticket-email',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token,'apikey':SUPABASE_ANON_KEY},body:JSON.stringify({email:'inventor8451l@gmail.com'})});
+  button.textContent='Sending test PDF…';status.textContent='Sending the '+category+' sample to '+recipient+'…';
+  const response=await fetch(SUPABASE_URL+'/functions/v1/admin-test-ticket-email',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token,'apikey':SUPABASE_ANON_KEY},body:JSON.stringify({email:recipient,category,pdfBase64})});
   const result=await response.json().catch(()=>({}));
   if(!response.ok||!result.ok)throw new Error(result.error||'Email request failed (HTTP '+response.status+')');
-  status.textContent='Accepted by email provider. Check inbox and spam at inventor8451l@gmail.com. Message ID: '+(result.message_id||'not supplied');
-  toast('Test email accepted by provider. Check the inbox.');
+  status.textContent='Accepted by email provider for '+recipient+'. '+category+' sample. Check inbox and spam. Message ID: '+(result.message_id||'not supplied');
+  toast('Test email accepted by provider.');
  }catch(error){console.error('Test ticket email failed:',error);status.textContent='Not sent: '+(error.message||'Unknown error');toast('Test email failed: '+(error.message||'check connection'))}
- finally{button.disabled=false;button.textContent='Send test ticket email'}
+ finally{holder.remove();button.disabled=false;button.textContent='Send test ticket email'}
 }
 async function renderAdmin(){
  if(!s.admin)return;
