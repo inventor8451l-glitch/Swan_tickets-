@@ -490,9 +490,15 @@ function loadSwanPdfLibrary(){
 }
 async function printSwanTicket(id,emailMode=false){
  const card=document.getElementById('swan-ticket-'+id);
- if(!card)return toast('Ticket is not available');
- const qrNode=card.querySelector('.swan-qr canvas,.swan-qr img');
- if(!qrNode)return toast('Ticket QR code is still loading. Try again in a moment.');
+ if(!card){const error=new Error('The sample ticket card was not created');if(emailMode)throw error;return toast(error.message)}
+ let qrNode=card.querySelector('.swan-qr canvas,.swan-qr img');
+ if(!qrNode&&emailMode){
+  for(let attempt=0;attempt<20&&!qrNode;attempt++){
+   await new Promise(resolve=>setTimeout(resolve,50));
+   qrNode=card.querySelector('.swan-qr canvas,.swan-qr img');
+  }
+ }
+ if(!qrNode){const error=new Error('The ticket QR image was not ready for PDF export');if(emailMode)throw error;return toast(error.message)}
  const button=card.querySelector('.swan-ticket-actions button'),oldLabel=button?.textContent;
  if(button){button.disabled=true;button.textContent='Preparing PDF…'}
  const read=(selector,fallback='')=>card.querySelector(selector)?.textContent?.trim()||fallback;
@@ -582,7 +588,7 @@ async function printSwanTicket(id,emailMode=false){
   }
   doc.save('SWAN-TICKET-'+ticketNo.replace(/[^A-Z0-9-]/gi,'')+'.pdf');
   toast('Your ticket PDF has been downloaded');
- }catch(err){console.error('SWAN PDF generation failed:',err);toast(err.message||'Could not generate the ticket PDF')}
+ }catch(err){console.error('SWAN PDF generation failed:',err);if(emailMode)throw err;toast(err.message||'Could not generate the ticket PDF')}
  finally{if(button){button.disabled=false;button.textContent=oldLabel||'Download / Print PDF'}}
 }
 
