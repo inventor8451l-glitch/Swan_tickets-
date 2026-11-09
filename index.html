@@ -503,110 +503,90 @@ function loadSwanPdfLibrary(){
  })().catch(error=>{swanPdfLibraryPromise=null;throw error});
  return swanPdfLibraryPromise;
 }
+let swanHtml2CanvasPromise=null;
+function loadSwanHtml2Canvas(){
+ if(window.html2canvas)return Promise.resolve(window.html2canvas);
+ if(swanHtml2CanvasPromise)return swanHtml2CanvasPromise;
+ swanHtml2CanvasPromise=(async()=>{
+  const sources=[
+   'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js',
+   'https://unpkg.com/html2canvas@1.4.1/dist/html2canvas.min.js',
+   'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js'
+  ];
+  let lastError=null;
+  for(const src of sources){
+   try{
+    await new Promise((resolve,reject)=>{
+     const script=document.createElement('script');
+     script.src=src;script.async=true;
+     script.onload=()=>window.html2canvas?resolve():reject(new Error('HTML capture library did not initialise'));
+     script.onerror=()=>{script.remove();reject(new Error('Could not load HTML capture library from '+new URL(src).hostname))};
+     document.head.appendChild(script);
+    });
+    if(window.html2canvas)return window.html2canvas;
+   }catch(error){lastError=error;console.warn('SWAN HTML capture source failed:',src,error)}
+  }
+  throw new Error('Could not load the ticket artwork capture engine. '+(lastError?.message||'Check the connection and retry.'));
+ })().catch(error=>{swanHtml2CanvasPromise=null;throw error});
+ return swanHtml2CanvasPromise;
+}
 async function printSwanTicket(id,emailMode=false){
  const card=document.getElementById('swan-ticket-'+id);
- if(!card){const error=new Error('The sample ticket card was not created');if(emailMode)throw error;return toast(error.message)}
- let qrNode=card.querySelector('.swan-qr canvas,.swan-qr img');
- if(!qrNode&&emailMode){
-  for(let attempt=0;attempt<20&&!qrNode;attempt++){
-   await new Promise(resolve=>setTimeout(resolve,50));
-   qrNode=card.querySelector('.swan-qr canvas,.swan-qr img');
-  }
- }
- if(!qrNode){const error=new Error('The ticket QR image was not ready for PDF export');if(emailMode)throw error;return toast(error.message)}
+ if(!card){const error=new Error('The ticket design could not be found');if(emailMode)throw error;return toast(error.message)}
+ const qrNode=card.querySelector('.swan-qr canvas,.swan-qr img');
+ if(!qrNode){const error=new Error('The ticket QR image is not ready for PDF export');if(emailMode)throw error;return toast(error.message)}
  const button=card.querySelector('.swan-ticket-actions button'),oldLabel=button?.textContent;
- if(button){button.disabled=true;button.textContent='Preparing PDF…'}
- const read=(selector,fallback='')=>card.querySelector(selector)?.textContent?.trim()||fallback;
- const clean=value=>String(value??'').replace(/\s+/g,' ').trim();
+ if(button){button.disabled=true;button.textContent='Preparing exact ticket artwork…'}
  try{
   const JsPDF=await loadSwanPdfLibrary();
-  const doc=new JsPDF({orientation:'landscape',unit:'mm',format:[180,75],compress:true});
-  const ticketNo=read('.swan-ticket-number-value',String(id).slice(0,8));
-  const eventTitle=clean(read('.swan-ticket-event','Event admission'));
-  const facts=Array.from(card.querySelectorAll('.swan-ticket-fact span')).map(x=>clean(x.textContent));
-  const dateText=facts[0]||'DATE TBA',timeText=facts[1]||'TIME TBA',venue=facts[2]||'VENUE TBA';
-  const customer=clean(card.querySelector('.swan-ticket-customer-grid>div b')?.textContent||'Ticket holder');
-  const booking=clean(read('.swan-ticket-booking b','—'));
-  const category=clean(read('.swan-ticket-category','GENERAL ADMISSION')).toUpperCase();
-  const variant=card.classList.contains('swan-vvip')?'vvip':card.classList.contains('swan-vip')?'vip':card.classList.contains('swan-earlybird')?'earlybird':'regular';
-  const palettes={
-   vvip:{bg:[12,10,7],left:[27,22,13],ink:[249,231,190],accent:[218,177,91],muted:[193,174,132],edge:[129,99,45],badge:[218,177,91],badgeInk:[24,18,8]},
-   vip:{bg:[20,23,28],left:[38,43,50],ink:[246,247,248],accent:[194,203,213],muted:[184,192,201],edge:[104,116,129],badge:[194,203,213],badgeInk:[23,26,30]},
-   earlybird:{bg:[250,249,245],left:[239,238,232],ink:[34,36,33],accent:[91,94,88],muted:[111,112,104],edge:[204,202,192],badge:[40,43,39],badgeInk:[255,255,255]},
-   regular:{bg:[9,31,35],left:[15,49,53],ink:[239,250,246],accent:[81,220,190],muted:[173,211,203],edge:[52,128,128],badge:[239,111,94],badgeInk:[28,27,26]}
-  };
-  const p=palettes[variant];
-  const rect=(x,y,w,h,fill)=>{doc.setFillColor(...fill);doc.rect(x,y,w,h,'F')};
-  const line=(x1,y1,x2,y2,color,width=.25)=>{doc.setDrawColor(...color);doc.setLineWidth(width);doc.line(x1,y1,x2,y2)};
-  const text=(value,x,y,size,color,bold=false,font='helvetica')=>{doc.setFont(font,bold?'bold':'normal');doc.setFontSize(size);doc.setTextColor(...color);doc.text(String(value??''),x,y)};
-  const fit=(value,maxWidth,size,min=4.2,font='helvetica',bold=false)=>{let n=size;doc.setFont(font,bold?'bold':'normal');doc.setFontSize(n);while(n>min&&doc.getTextWidth(String(value))>maxWidth){n-=.35;doc.setFontSize(n)}return n};
-  rect(0,0,180,75,p.bg);rect(0,0,57,75,p.left);rect(57,0,84,75,p.bg);rect(141,0,39,75,p.left);
-  if(variant==='vvip'){
-   doc.setDrawColor(...p.accent);doc.setLineWidth(.65);doc.rect(2,2,53,71);doc.setLineWidth(.2);doc.rect(4,4,49,67);
-   rect(7,7,43,1,p.accent);rect(7,67,43,1,p.accent);
-  }else if(variant==='vip'){
-   doc.setDrawColor(...p.accent);doc.setLineWidth(.45);doc.rect(2,2,53,71);
-   for(let i=0;i<6;i++)line(5,12+i*10,52,4+i*10,p.edge,.18);
-  }else if(variant==='earlybird'){
-   doc.setDrawColor(...p.edge);doc.setLineWidth(.25);doc.rect(2,2,53,71);
-   for(let i=0;i<7;i++)rect(5+i*7,5,1,65,[224,223,216]);
-  }else{
-   const bars=[[239,111,94],[246,193,86],[81,220,190],[119,158,255],[190,128,232]];
-   bars.forEach((c,i)=>rect(5+i*9,5,6,2,c));
-   rect(5,68,47,1,p.accent);
-  }
-  // Restore the SWAN emblem in the exported PDF.
-  const swanColor='#'+p.ink.map(v=>v.toString(16).padStart(2,'0')).join('');
-  const swanSvg='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><path d="M13 91c19-4 34-14 43-29 8-13 7-25-5-34-8-6-9-14-3-20 7-7 19-3 22 6 3 7-2 14-9 18 15 8 31 3 49-20-7 23-21 41-44 52-18 9-35 19-53 27Z" fill="'+swanColor+'"/><path d="m43 12 8-10 9 10 11-4-3 14H35l-3-14 11 4Z" fill="'+swanColor+'"/><path d="M16 92c18-1 36-8 51-19" fill="none" stroke="'+swanColor+'" stroke-width="3" opacity=".5"/></svg>';
-  const swanImage=new Image();
-  const swanPng=await new Promise((resolve,reject)=>{
-   swanImage.onload=()=>{const canvas=document.createElement('canvas');canvas.width=240;canvas.height=240;const ctx=canvas.getContext('2d');ctx.drawImage(swanImage,0,0,240,240);resolve(canvas.toDataURL('image/png'))};
-   swanImage.onerror=reject;
-   swanImage.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(swanSvg);
+  const html2canvas=await loadSwanHtml2Canvas();
+  const exportWidth=1080;
+  const canvas=await html2canvas(card,{
+   scale:2,
+   backgroundColor:null,
+   useCORS:true,
+   allowTaint:false,
+   logging:false,
+   windowWidth:1200,
+   windowHeight:900,
+   onclone:clonedDocument=>{
+    const clonedCard=clonedDocument.getElementById('swan-ticket-'+id);
+    const holder=clonedCard?.closest('#swan-email-test-holder');
+    if(holder){
+     holder.style.cssText='position:absolute;left:0;top:0;width:'+exportWidth+'px;display:block;opacity:1;visibility:visible;z-index:999999;transform:none;pointer-events:none';
+    }
+    if(clonedCard){
+     clonedCard.style.width=exportWidth+'px';
+     clonedCard.style.maxWidth='none';
+     clonedCard.style.minHeight='0';
+     clonedCard.style.aspectRatio='2.4 / 1';
+     const actions=clonedCard.querySelector('.swan-ticket-actions');
+     if(actions)actions.style.display='none';
+    }
+   }
   });
-  doc.addImage(swanPng,'PNG',22.5,7.5,12,12,undefined,'FAST');
-  text('SWAN',28.5,29,15,p.ink,true,'times');
-  text('T I C K E T S',28.5,36,4.6,p.accent,true);
-  line(12,40,45,40,p.accent,.3);
-  text(variant==='vvip'?'VVIP ACCESS':variant==='vip'?'VIP ACCESS':variant==='earlybird'?'EARLY BIRD':'REGULAR',28.5,49,4.2,p.muted,true);
-  text('OFFICIAL ADMISSION',28.5,59,3.0,p.muted,true);
-  text('SWAN TICKETS',28.5,64,3.0,p.muted,false);
-  line(57,3,57,72,p.edge,.4);
-  text('EVENT ADMISSION',63,8,4.2,p.accent,true);
-  const titleSize=fit(eventTitle,71,12,7.0,'times',true);
-  doc.setFont('times','bold');doc.setFontSize(titleSize);doc.setTextColor(...p.ink);
-  const titleLines=doc.splitTextToSize(eventTitle,71).slice(0,2);
-  doc.text(titleLines,63,16);
-  const titleBottom=16+(titleLines.length-1)*titleSize*.42;
-  rect(63,titleBottom+2,Math.min(69,Math.max(24,category.length*1.55+7)),6,p.badge);
-  text(category,66,titleBottom+6.2,4.0,p.badgeInk,true);
-  const infoY=titleBottom+13;
-  text('ATTENDEE',63,infoY,3.2,p.muted,true);
-  const custSize=fit(customer,72,5.7,4.0,'helvetica',true);text(customer,63,infoY+4.4,custSize,p.ink,true);
-  text('DATE & TIME',63,infoY+11,3.2,p.muted,true);
-  const dateLine=dateText+' · '+timeText;const dateSize=fit(dateLine,72,5.0,3.8);text(dateLine,63,infoY+15.3,dateSize,p.ink);
-  text('VENUE',63,infoY+21.5,3.2,p.muted,true);
-  const venueSize=fit(venue,72,5.0,3.8);text(venue,63,infoY+25.8,venueSize,p.ink);
-  line(63,66,136,66,p.edge,.2);
-  text('BOOKING REF. '+booking,63,70.5,3.0,p.muted,true);
-  line(141,2,141,73,p.accent,.45);
-  text('SCAN AT',160.5,8,4.0,p.ink,true);text('ENTRY',160.5,13,4.0,p.ink,true);
-  const qrData=qrNode.tagName.toLowerCase()==='canvas'?qrNode.toDataURL('image/png'):qrNode.src;
-  doc.setFillColor(255,255,255);doc.rect(146,17,29,29,'F');doc.addImage(qrData,'PNG',147,18,27,27,undefined,'FAST');
-  text('TICKET NO.',160.5,52,3.0,p.muted,true);
-  const noSize=fit(ticketNo,32,4.0,2.7,'helvetica',true);text(ticketNo,160.5,57,noSize,p.ink,true);
-  line(147,61,174,61,p.edge,.2);text('ONE ENTRY',160.5,67,3.1,p.accent,true);
+  if(!canvas.width||!canvas.height)throw new Error('The ticket artwork capture returned an empty image');
+  const image=canvas.toDataURL('image/jpeg',0.98);
+  const width=180,height=width*canvas.height/canvas.width;
+  const doc=new JsPDF({orientation:'landscape',unit:'mm',format:[width,height],compress:true});
+  doc.addImage(image,'JPEG',0,0,width,height,undefined,'FAST');
   if(emailMode){
-   doc.setFont('helvetica','bold');doc.setFontSize(4.8);doc.setTextColor(205,62,48);
-   doc.text('TEST COPY - NOT VALID FOR ENTRY',90,73,{align:'center'});
+   doc.setFont('helvetica','bold');doc.setFontSize(5);
+   doc.setTextColor(190,48,42);
+   doc.text('TEST COPY — NOT VALID FOR ENTRY',width/2,height-2,{align:'center'});
    return doc.output('datauristring');
   }
+  const ticketNo=card.querySelector('.swan-ticket-number-value')?.textContent?.trim()||String(id).slice(0,8);
   doc.save('SWAN-TICKET-'+ticketNo.replace(/[^A-Z0-9-]/gi,'')+'.pdf');
-  toast('Your ticket PDF has been downloaded');
- }catch(err){console.error('SWAN PDF generation failed:',err);if(emailMode)throw err;toast(err.message||'Could not generate the ticket PDF')}
- finally{if(button){button.disabled=false;button.textContent=oldLabel||'Download / Print PDF'}}
+  toast('Your ticket design has been exported to PDF');
+ }catch(err){
+  console.error('SWAN ticket artwork export failed:',err);
+  if(emailMode)throw err;
+  toast(err.message||'Could not export the ticket PDF');
+ }finally{
+  if(button){button.disabled=false;button.textContent=oldLabel||'Download / Print PDF'}
+ }
 }
-
 async function runManualMaintenance(){
  if(!s.admin)return toast('Sign in as an administrator first');
  if(!confirm('Run safe maintenance now? Only technical job-run logs older than 30 days will be deleted. All customer, payment, ticket, QR, scan, event and image records will be preserved.'))return;
@@ -726,7 +706,7 @@ async function sendTestTicketEmail(){
  if(button.disabled)return;
  button.disabled=true;button.textContent='Preparing exact ticket design…';status.textContent='Generating the selected SWAN ticket template…';
  const sampleId='email-test-'+Date.now();
- const holder=document.createElement('div');holder.id='swan-email-test-holder';holder.style.cssText='position:fixed;left:-10000px;top:0;width:720px;display:block;z-index:-1';
+ const holder=document.createElement('div');holder.id='swan-email-test-holder';holder.style.cssText='position:fixed;left:-10000px;top:0;width:1080px;display:block;z-index:-1;opacity:1;visibility:visible;pointer-events:none';
  const now=new Date();
  const testTicket={id:sampleId,ticket_types:{name:category},events:{title:'SWAN TICKETS SAMPLE EVENT',starts_at:now.toISOString(),venue:'Sample venue'},attendee_name:'TEST ATTENDEE',ticket_number:'TEST-ONLY',bookingReference:'TEST-NOT-VALID',status:'TEST ONLY'};
  holder.innerHTML='<div class="swan-ticket-list">'+ticketCardMarkup(testTicket)+'</div>';
