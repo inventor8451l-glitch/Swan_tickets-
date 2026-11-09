@@ -489,7 +489,7 @@ async function printSwanTicket(id){
  const oldLabel=button?.textContent;
  if(button){button.disabled=true;button.textContent='Preparing PDF…'}
  const read=(selector,fallback='')=>card.querySelector(selector)?.textContent?.trim()||fallback;
- const escapePdf=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  try{
   const html2pdf=await loadSwanPdfLibrary();
   const ticketNo=read('.swan-ticket-number-value',String(id).slice(0,8));
@@ -500,170 +500,53 @@ async function printSwanTicket(id){
   const booking=read('.swan-ticket-booking b','—');
   const category=read('.swan-ticket-category','GENERAL ADMISSION').toUpperCase();
   const variant=card.classList.contains('swan-vvip')?'vvip':card.classList.contains('swan-vip')?'vip':card.classList.contains('swan-earlybird')?'earlybird':'regular';
-  const palettes={vvip:{bg:'#100d08',panel:'#1c160b',ink:'#f4d58b',accent:'#c99b43',muted:'#c5b58e'},vip:{bg:'#101116',panel:'#1b1d25',ink:'#f1f1f4',accent:'#aeb5c3',muted:'#c1c4cc'},earlybird:{bg:'#f7f5ef',panel:'#eeece5',ink:'#171717',accent:'#777064',muted:'#5d5a54'},regular:{bg:'#d9d0ec',panel:'#c9dfe7',ink:'#17172a',accent:'#514c78',muted:'#46465d'}};
+  const palettes={
+   vvip:{bg:'#100b05',panel:'#211706',ink:'#f5d98e',accent:'#d2a548',muted:'#c8b77f',edge:'#8c6423'},
+   vip:{bg:'#0d1017',panel:'#20242e',ink:'#f4f1e9',accent:'#c5cbd5',muted:'#b9c0ca',edge:'#777f8c'},
+   earlybird:{bg:'#fbfaf6',panel:'#efede7',ink:'#171717',accent:'#5f5a50',muted:'#625f58',edge:'#c7c2b8'},
+   regular:{bg:'#e8dff1',panel:'#d7e6ec',ink:'#18172a',accent:'#645b88',muted:'#4c4a62',edge:'#9384b3'}
+  };
   const p=palettes[variant],qrImage=qr.toDataURL('image/png');
   const wrapper=document.createElement('div');
-  wrapper.style.cssText='position:fixed;left:-10000px;top:0;width:180mm;height:75mm;margin:0;padding:0;overflow:hidden;background:'+p.bg+';z-index:-1;';
+  wrapper.style.cssText='position:fixed;left:-12000px;top:0;width:180mm;height:75mm;margin:0;padding:0;overflow:hidden;background:'+p.bg+';z-index:-1;';
   const style=document.createElement('style');
-  style.textContent=
-   '#swan-pdf-ticket,#swan-pdf-ticket *{box-sizing:border-box!important}'+
-   '#swan-pdf-ticket{width:180mm!important;height:75mm!important;display:grid!important;grid-template-columns:28% 48% 24%!important;overflow:hidden!important;position:relative!important;margin:0!important;padding:0!important;background:'+p.bg+'!important;color:'+p.ink+'!important;font-family:Arial,Helvetica,sans-serif!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}'+
-   '#swan-pdf-ticket:after{content:"";position:absolute;inset:2mm;border:.35mm solid '+p.accent+';opacity:.65;pointer-events:none;z-index:5}'+
-   '#swan-pdf-ticket .pdf-brand{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:5mm 3mm;background:'+p.panel+';border-right:.35mm solid '+p.accent+';min-width:0}'+
-   '#swan-pdf-ticket .pdf-swan{width:19mm;height:19mm;display:block;margin-bottom:2mm;color:'+p.ink+'}'+
-   '#swan-pdf-ticket .pdf-brand-name{font-size:20pt;line-height:1;font-weight:900;letter-spacing:.08em}'+
-   '#swan-pdf-ticket .pdf-brand-sub{font-size:9pt;line-height:1.4;font-weight:800;letter-spacing:.36em;margin-left:.36em}'+
-   '#swan-pdf-ticket .pdf-brand-tag{font-size:6pt;letter-spacing:.16em;font-weight:700;margin-top:4mm;color:'+p.muted+'}'+
-   '#swan-pdf-ticket .pdf-info{display:flex;flex-direction:column;justify-content:center;min-width:0;padding:5mm 6mm}'+
-   '#swan-pdf-ticket .pdf-kicker{font-size:6pt;letter-spacing:.2em;font-weight:800;color:'+p.accent+';margin-bottom:1.5mm}'+
-   '#swan-pdf-ticket .pdf-event{font-family:Georgia,serif;font-size:22pt;line-height:1.04;font-weight:700;overflow-wrap:anywhere;max-height:2.1em;overflow:hidden;margin:0 0 2.5mm}'+
-   '#swan-pdf-ticket .pdf-category{align-self:flex-start;font-size:7pt;font-weight:900;letter-spacing:.1em;border:.3mm solid '+p.accent+';padding:1.2mm 2.5mm;margin-bottom:3mm}'+
-   '#swan-pdf-ticket .pdf-details{display:grid;grid-template-columns:1fr 1fr;gap:2.5mm 4mm}'+
-   '#swan-pdf-ticket .pdf-detail{min-width:0}'+
-   '#swan-pdf-ticket .pdf-detail small{display:block;font-size:5.5pt;letter-spacing:.12em;font-weight:800;color:'+p.muted+';margin-bottom:.8mm}'+
-   '#swan-pdf-ticket .pdf-detail b{display:block;font-size:9pt;line-height:1.15;font-weight:700;overflow-wrap:anywhere}'+
-   '#swan-pdf-ticket .pdf-booking{grid-column:1/-1;padding-top:1.5mm;border-top:.2mm solid '+p.accent+'66}'+
-   '#swan-pdf-ticket .pdf-stub{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2mm;padding:3mm 2mm;text-align:center;border-left:.4mm dashed '+p.accent+';background:'+p.panel+';min-width:0}'+
-   '#swan-pdf-ticket .pdf-scan{font-size:7pt;font-weight:900;letter-spacing:.16em}'+
-   '#swan-pdf-ticket .pdf-qr{width:32mm;height:32mm;padding:1mm;background:#fff;display:block;object-fit:contain}'+
-   '#swan-pdf-ticket .pdf-ticket-no{font-size:6pt;font-weight:800;letter-spacing:.08em;overflow-wrap:anywhere}'+
-   '#swan-pdf-ticket .pdf-valid{font-size:6pt;font-weight:900;color:'+p.accent+';letter-spacing:.1em}';
+  style.textContent=[
+   '*{box-sizing:border-box!important}',
+   '#swan-pdf-ticket{position:relative!important;display:block!important;width:180mm!important;height:75mm!important;overflow:hidden!important;margin:0!important;padding:0!important;background:'+p.bg+'!important;color:'+p.ink+'!important;font-family:Arial,Helvetica,sans-serif!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}',
+   '#swan-pdf-ticket:before{content:"";position:absolute;inset:2mm;border:.35mm solid '+p.edge+';pointer-events:none;z-index:8}',
+   '#swan-pdf-ticket .pdf-brand{position:absolute;left:0;top:0;width:30%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:5mm 3mm;background:'+p.panel+';border-right:.4mm solid '+p.accent+'}',
+   '#swan-pdf-ticket .pdf-swan{display:block;width:17mm;height:17mm;margin:0 auto 2mm;color:'+p.ink+'}',
+   '#swan-pdf-ticket .pdf-brand-name{font-size:19pt;line-height:1.05;font-weight:900;letter-spacing:.09em}',
+   '#swan-pdf-ticket .pdf-brand-sub{font-size:8pt;line-height:1.5;font-weight:800;letter-spacing:.42em;margin-left:.42em}',
+   '#swan-pdf-ticket .pdf-brand-tag{font-size:5.5pt;letter-spacing:.16em;font-weight:700;margin-top:4mm;color:'+p.muted+'}',
+   '#swan-pdf-ticket .pdf-info{position:absolute;left:30%;top:0;width:46%;height:100%;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;padding:5mm 6mm;overflow:hidden}',
+   '#swan-pdf-ticket .pdf-kicker{font-size:6pt;letter-spacing:.19em;font-weight:800;color:'+p.accent+';margin:0 0 1.5mm}',
+   '#swan-pdf-ticket .pdf-event{display:block;width:100%;font-family:Georgia,serif;font-size:21pt;line-height:1.03;font-weight:700;overflow-wrap:anywhere;max-height:2.06em;overflow:hidden;margin:0 0 2mm}',
+   '#swan-pdf-ticket .pdf-category{display:inline-block;font-size:6.5pt;line-height:1.2;font-weight:900;letter-spacing:.12em;border:.3mm solid '+p.accent+';padding:1mm 2.5mm;margin:0 0 3mm;color:'+p.ink+'}',
+   '#swan-pdf-ticket .pdf-detail{display:block;width:100%;margin:0 0 2.1mm;min-width:0}',
+   '#swan-pdf-ticket .pdf-detail small{display:block;font-size:5pt;letter-spacing:.14em;font-weight:800;color:'+p.muted+';margin:0 0 .6mm}',
+   '#swan-pdf-ticket .pdf-detail b{display:block;font-size:8pt;line-height:1.12;font-weight:700;overflow-wrap:anywhere}',
+   '#swan-pdf-ticket .pdf-row{display:flex;width:100%;gap:5mm}',
+   '#swan-pdf-ticket .pdf-row .pdf-detail{width:50%}',
+   '#swan-pdf-ticket .pdf-booking{border-top:.2mm solid '+p.accent+';padding-top:1.5mm;margin-top:.3mm}',
+   '#swan-pdf-ticket .pdf-stub{position:absolute;left:76%;top:0;width:24%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.6mm;padding:3mm 2mm;text-align:center;border-left:.4mm dashed '+p.accent+';background:'+p.panel+'}',
+   '#swan-pdf-ticket .pdf-scan{font-size:6.5pt;font-weight:900;letter-spacing:.13em}',
+   '#swan-pdf-ticket .pdf-qr{display:block;width:30mm;height:30mm;padding:1mm;background:#fff;object-fit:contain;border:.3mm solid #fff}',
+   '#swan-pdf-ticket .pdf-ticket-no{font-size:5.5pt;font-weight:800;letter-spacing:.05em;overflow-wrap:anywhere;max-width:100%}',
+   '#swan-pdf-ticket .pdf-valid{font-size:5.5pt;font-weight:900;color:'+p.accent+';letter-spacing:.08em}'
+  ].join('');
   const swan='<svg class="pdf-swan" viewBox="0 0 120 120" aria-hidden="true"><path d="M13 91c19-4 34-14 43-29 8-13 7-25-5-34-8-6-9-14-3-20 7-7 19-3 22 6 3 7-2 14-9 18 15 8 31 3 49-20-7 23-21 41-44 52-18 9-35 19-53 27Z" fill="currentColor"/><path d="m43 12 8-10 9 10 11-4-3 14H35l-3-14 11 4Z" fill="currentColor"/></svg>';
-  wrapper.innerHTML='<article id="swan-pdf-ticket"><section class="pdf-brand">'+swan+'<div class="pdf-brand-name">SWAN</div><div class="pdf-brand-sub">TICKETS</div><div class="pdf-brand-tag">THE GRAND EXPERIENCE</div></section><section class="pdf-info"><div class="pdf-kicker">OFFICIAL ADMISSION TICKET</div><h1 class="pdf-event">'+escapePdf(eventTitle)+'</h1><div class="pdf-category">'+escapePdf(category)+'</div><div class="pdf-details"><div class="pdf-detail"><small>ATTENDEE</small><b>'+escapePdf(customer)+'</b></div><div class="pdf-detail"><small>DATE &amp; TIME</small><b>'+escapePdf(dateText)+' · '+escapePdf(timeText)+'</b></div><div class="pdf-detail"><small>VENUE</small><b>'+escapePdf(venue)+'</b></div><div class="pdf-detail pdf-booking"><small>BOOKING REFERENCE</small><b>'+escapePdf(booking)+'</b></div></div></section><aside class="pdf-stub"><div class="pdf-scan">SCAN AT ENTRY</div><img class="pdf-qr" src="'+qrImage+'" alt="Ticket QR code"><div class="pdf-ticket-no">TICKET NO. '+escapePdf(ticketNo)+'</div><div class="pdf-valid">VALID · ONE ENTRY</div></aside></article>';
+  wrapper.innerHTML='<article id="swan-pdf-ticket"><section class="pdf-brand">'+swan+'<div class="pdf-brand-name">SWAN</div><div class="pdf-brand-sub">TICKETS</div><div class="pdf-brand-tag">THE GRAND EXPERIENCE</div></section><section class="pdf-info"><div class="pdf-kicker">OFFICIAL ADMISSION</div><h1 class="pdf-event">'+esc(eventTitle)+'</h1><div class="pdf-category">'+esc(category)+'</div><div class="pdf-row"><div class="pdf-detail"><small>ATTENDEE</small><b>'+esc(customer)+'</b></div><div class="pdf-detail"><small>DATE &amp; TIME</small><b>'+esc(dateText)+' · '+esc(timeText)+'</b></div></div><div class="pdf-detail"><small>VENUE</small><b>'+esc(venue)+'</b></div><div class="pdf-detail pdf-booking"><small>BOOKING REFERENCE</small><b>'+esc(booking)+'</b></div></section><aside class="pdf-stub"><div class="pdf-scan">SCAN AT ENTRY</div><img class="pdf-qr" src="'+qrImage+'" alt="Ticket QR code"><div class="pdf-ticket-no">TICKET NO. '+esc(ticketNo)+'</div><div class="pdf-valid">VALID · ONE ENTRY</div></aside></article>';
   wrapper.insertBefore(style,wrapper.firstChild);
   document.body.appendChild(wrapper);
   const filename='SWAN-TICKET-'+ticketNo.replace(/[^A-Z0-9-]/gi,'')+'.pdf';
   try{
-   await html2pdf().set({margin:0,filename,image:{type:'png',quality:1},html2canvas:{scale:3,useCORS:true,allowTaint:false,backgroundColor:p.bg,logging:false,scrollX:0,scrollY:0,windowWidth:680,windowHeight:284},jsPDF:{unit:'mm',format:[180,75],orientation:'landscape',compress:true},pagebreak:{mode:['avoid-all']}}).from(wrapper.querySelector('#swan-pdf-ticket')).save();
+   await html2pdf().set({margin:0,filename,image:{type:'png',quality:1},html2canvas:{scale:4,useCORS:true,allowTaint:false,backgroundColor:p.bg,logging:false,scrollX:0,scrollY:0,windowWidth:680,windowHeight:284},jsPDF:{unit:'mm',format:[180,75],orientation:'landscape',compress:true},pagebreak:{mode:['avoid-all']}}).from(wrapper.querySelector('#swan-pdf-ticket')).save();
    toast('Your ticket PDF has been downloaded');
   }finally{wrapper.remove()}
  }catch(err){console.error('Ticket PDF generation failed:',err);toast(err.message||'Could not generate the ticket PDF')}
  finally{if(button){button.disabled=false;button.textContent=oldLabel||'Download PDF'}}
-}
-async function runManualMaintenance(){
- if(!s.admin)return toast('Sign in as an administrator first');
- if(!confirm('Run safe maintenance now? Only technical job-run logs older than 30 days will be deleted. All customer, payment, ticket, QR, scan, event and image records will be preserved.'))return;
- const button=document.getElementById('maintenanceRunBtn');
- const status=document.getElementById('maintenanceStatus');
- if(button)button.disabled=true;
- try{
-  const {data,error}=await supabaseClient.rpc('run_swan_weekly_maintenance');
-  if(error)throw error;
-  const deleted=Number(data?.deleted_old_cron_runs||0);
-  if(status)status.textContent='Last manual run: '+new Date(data.ran_at||Date.now()).toLocaleString('en-KE')+' · Old technical logs removed: '+deleted;
-  showAppDialog('Maintenance completed',deleted+' old technical job-run log(s) removed. Business records and event files were left untouched.', '', 'success', 'OK');
- }catch(error){
-  console.error('Maintenance failed:',error);
-  if(status)status.textContent='Maintenance could not run: '+(error.message||'Unknown error');
-  showAppDialog('Maintenance could not run',error.message||'Please try again later.','', 'danger', 'OK');
- }finally{if(button)button.disabled=false}
-}
-async function adminLogin(){const email=document.getElementById('adminemail').value.trim(),password=document.getElementById('adminpass').value;if(!email||!password)return toast('Enter your admin email and password');try{const {data,error}=await supabaseClient.auth.signInWithPassword({email,password});if(error)throw error;const {data:admin,error:checkError}=await supabaseClient.from('admin_users').select('user_id').eq('user_id',data.user.id).maybeSingle();if(checkError)throw checkError;if(!admin){await supabaseClient.auth.signOut();throw new Error('This account is not authorised as a SWAN TICKETS admin.')}s.admin=true;document.getElementById('adminlogin').style.display='none';document.getElementById('dashboard').style.display='block';await renderAdmin();populateScanEvents();toast('Admin signed in')}catch(e){toast(e.message||'Sign-in failed')}}async function logout(){await stopTicketScanner();await supabaseClient.auth.signOut();s.admin=false;document.getElementById('adminlogin').style.display='block';document.getElementById('dashboard').style.display='none';document.getElementById('adminpass').value=''}
-let ticketScanner=null,scannerBusy=false,lastScannedPayload='',lastScannedAt=0;
-let scanAccepted=0,scanRejected=0,scanSessionHistory=[];
-function populateScanEvents(){
- const sel=document.getElementById('scanEvent');if(!sel)return;
- const current=sel.value;
- sel.innerHTML='<option value="">All events</option>'+s.events.map(e=>'<option value="'+esc(e.id)+'">'+esc(e.title)+'</option>').join('');
- if(current&&s.events.some(e=>e.id===current))sel.value=current;
-}
-function setScannerState(label){const e=document.getElementById('scannerState');if(e)e.textContent=label;}
-function showScanResult(result,data){
- const accepted=result==='accepted'||result==='valid_preview';
- const titles={accepted:'VALID TICKET — ADMIT','valid_preview':'VALID TICKET — NOT CHECKED IN',already_used:'ALREADY USED — DO NOT ADMIT',cancelled:'CANCELLED TICKET — DO NOT ADMIT',invalid:'INVALID QR — DO NOT ADMIT',unpaid:'PAYMENT NOT CONFIRMED — DO NOT ADMIT',wrong_event:'WRONG EVENT — DO NOT ADMIT'};
- const title=titles[result]||'SCAN FAILED — DO NOT ADMIT';
- const fields=[['Attendee',data.attendee_name],['Ticket',data.ticket_number],['Ticket type',data.ticket_type],['Event',data.event_title],['Booking ref',data.booking_reference],['Previously scanned',data.scanned_at?new Date(data.scanned_at).toLocaleString('en-KE'):null]];
- const details='<div class="scan-meta">'+fields.filter(x=>x[1]).map(x=>'<div><span>'+esc(x[0])+'</span><b>'+esc(x[1])+'</b></div>').join('')+'</div>';
- showAppDialog(title,data.message||(result==='valid_preview'?'Ticket is valid. No check-in was recorded.':accepted?'Ticket verified. Admit this attendee.':'Do not admit. This ticket could not be accepted.'),details,accepted?'success':'danger',result==='valid_preview'?'Close preview':'Continue scanning',()=>{lastScannedPayload='';});
- if(navigator.vibrate)navigator.vibrate(accepted?[70]:[160,70,160]);
-}
-function addScanHistory(result,data){
- const accepted=result==='accepted';if(accepted)scanAccepted++;else scanRejected++;
- document.getElementById('scanAcceptedCount').textContent=scanAccepted;
- document.getElementById('scanRejectedCount').textContent=scanRejected;
- scanSessionHistory.unshift({result,data,at:new Date()});scanSessionHistory=scanSessionHistory.slice(0,8);
- document.getElementById('scanHistory').innerHTML=scanSessionHistory.map(x=>'<div class="scan-log"><div><b>'+esc(x.data.ticket_number||x.data.message||'Unrecognised QR')+'</b><span class="muted">'+esc(x.data.attendee_name||'')+' · '+x.at.toLocaleTimeString('en-KE')+'</span></div><span class="status">'+(x.result==='accepted'?'ACCEPTED':esc(x.result.toUpperCase()))+'</span></div>').join('');
-}
-async function validateTicketPayload(payload){
- const clean=String(payload||'').trim();if(!clean)return;
- const now=Date.now();if(scannerBusy||appDialogOpen)return;
- if(clean===lastScannedPayload&&now-lastScannedAt<2200)return;
- lastScannedPayload=clean;lastScannedAt=now;scannerBusy=true;
- try{
-  const eventId=document.getElementById('scanEvent')?.value||null;
-  const {data,error}=await supabaseClient.rpc('scan_swan_ticket',{p_qr_payload:clean,p_event_id:eventId});
-  if(error)throw error;
-  const result=data?.result||'invalid';showScanResult(result,data||{});addScanHistory(result,data||{});
- }catch(error){
-  console.error('Ticket scan validation failed:',error);
-  showScanResult('error',{message:'Could not verify with the server. Check the connection and scan again.'});
-  addScanHistory('error',{message:'Server verification failed'});
- }finally{
-  scannerBusy=false;
-  const manual=document.getElementById('manualQr');if(manual)manual.value='';
- }
-}
-async function startTicketScanner(){
- if(!s.admin)return toast('Sign in as an administrator first');
- if(!window.Html5Qrcode)return toast('Scanner library did not load. Refresh and try again.');
- if(ticketScanner)return;
- try{
-  document.getElementById('scannerCamera').innerHTML='';
-  ticketScanner=new Html5Qrcode('scannerCamera',{verbose:false});
-  await ticketScanner.start({facingMode:'environment'},{fps:15,qrbox:{width:245,height:245},aspectRatio:1.0},
-   decoded=>{validateTicketPayload(decoded);},()=>{});
-  setScannerState('Camera active');
-  document.getElementById('scannerStartBtn').disabled=true;
-  document.getElementById('scannerStopBtn').disabled=false;
- }catch(error){
-  console.error('Camera start failed:',error);ticketScanner=null;setScannerState('Camera unavailable');
-  toast('Camera unavailable. Allow camera access or use manual QR entry.');
- }
-}
-async function stopTicketScanner(){
- if(!ticketScanner){setScannerState('Camera off');return;}
- const active=ticketScanner;ticketScanner=null;
- try{await active.stop();await active.clear();}catch(error){console.warn('Scanner stop:',error);}
- setScannerState('Camera off');
- const start=document.getElementById('scannerStartBtn'),stop=document.getElementById('scannerStopBtn');
- if(start)start.disabled=false;if(stop)stop.disabled=true;
-}
-async function previewManualTicket(){const clean=String(document.getElementById('manualQr')?.value||'').trim();if(!clean)return toast('Paste the decoded QR text first');if(scannerBusy||appDialogOpen)return;scannerBusy=true;try{const eventId=document.getElementById('scanEvent')?.value||null;const {data,error}=await supabaseClient.rpc('preview_swan_ticket',{p_qr_payload:clean,p_event_id:eventId});if(error)throw error;showScanResult(data?.result||'invalid',data||{});}catch(error){console.error('Ticket preview failed:',error);showScanResult('error',{message:'Could not check this ticket. Verify the QR text and connection.'});}finally{scannerBusy=false;}}
-function submitManualTicket(){validateTicketPayload(document.getElementById('manualQr').value);}
-let adminOrders=[];
-async function loadAdminOrders(){
- const target=document.getElementById('adminorders');
- target.innerHTML='<p class="muted">Loading live orders…</p>';
- const {data:rows,error}=await supabaseClient.from('orders')
-  .select('id,booking_reference,customer_name,customer_email,customer_phone,total_amount,currency,status,created_at,mpesa_receipt_number,payment_reference,paid_at,order_items(quantity,unit_price,ticket_types(name,events(title,starts_at,venue)))')
-  .order('created_at',{ascending:false});
- if(error)throw error;
- adminOrders=(rows||[]).map(o=>{
-  const items=(o.order_items||[]).map(i=>({
-   quantity:Number(i.quantity||0),unitPrice:Number(i.unit_price||0),
-   ticketType:i.ticket_types?.name||'Ticket type unavailable',
-   event:i.ticket_types?.events?.title||'Event unavailable',
-   eventDate:i.ticket_types?.events?.starts_at||null,
-   venue:i.ticket_types?.events?.venue||''
-  }));
-  return {id:o.id,reference:o.booking_reference||o.id,name:o.customer_name||'',email:o.customer_email||'',phone:o.customer_phone||'',total:Number(o.total_amount||0),currency:o.currency||'KES',status:o.status||'pending',created:o.created_at,receipt:o.mpesa_receipt_number||o.payment_reference||'',paidAt:o.paid_at,items};
- });
-}
-async function renderAdmin(){
- if(!s.admin)return;
- try{
-  await loadEvents();
-  await loadAdminOrders();
-  document.getElementById('statEvents').textContent=s.events.length;
-  document.getElementById('statOrders').textContent=adminOrders.length;
-  document.getElementById('statPending').textContent=adminOrders.filter(o=>o.status==='pending').length;
-  document.getElementById('statSold').textContent=adminOrders.filter(o=>o.status==='paid').reduce((sum,o)=>sum+o.items.reduce((n,i)=>n+i.quantity,0),0);
-  document.getElementById('adminorders').innerHTML=adminOrders.length?adminOrders.map(o=>{
-   const itemText=o.items.map(i=>esc(i.event)+' · '+esc(i.ticketType)+' × '+i.quantity).join('<br>');
-   return '<div class="glass adminitem"><div class="row"><b>'+esc(o.reference)+'</b><span class="status">'+esc(o.status.toUpperCase())+'</span></div><p class="muted">'+esc(o.name)+'<br>'+esc(o.email)+'<br>'+esc(o.phone)+'<br>'+itemText+'<br>M-Pesa receipt: '+esc(o.receipt||'Not available')+'<br>Created: '+esc(o.created||'')+'</p><div class="row"><b class="price">'+money(o.total)+'</b><span class="muted">'+o.items.reduce((n,i)=>n+i.quantity,0)+' ticket(s)</span></div></div>';
-  }).join(''):'<p class="muted">No orders have been recorded yet.</p>';
-  document.getElementById('adminevents').innerHTML=s.events.length?s.events.map(e=>'<div class="glass adminitem"><div class="row"><b>'+esc(e.title)+'</b><span class="status">'+esc(e.category)+'</span></div><p class="muted">'+date(e.date)+' · '+esc(e.time)+' · '+esc(e.venue)+'<br>From '+money(Math.min(...e.tickets.map(t=>t.price)))+'</p>'+(e.images&&e.images.length?'<div class="upload-preview">'+e.images.slice(0,3).map(url=>'<div class="upload-thumb"><img src="'+esc(url)+'" alt="Event image"></div>').join('')+'</div>':'')+'<button class="btn small ghost" onclick="deleteEvent(\''+esc(e.id)+'\')">Delete event</button></div>').join(''):'<p class="muted">No events have been added yet.</p>';
- }catch(err){
+}catch(err){
   console.error('Admin dashboard load failed:',err);
   document.getElementById('adminorders').innerHTML='<p class="muted">Could not load live orders: '+esc(err.message||'database error')+'</p>';
   toast('Admin data could not be loaded. Check access permissions.');
