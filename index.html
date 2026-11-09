@@ -409,6 +409,8 @@ input:focus,select:focus,textarea:focus,button:focus-visible{outline:2px solid v
  <div id="scanHistory"><p class="muted">No scans in this session.</p></div>
 </div>
 <div class="section"><div><div class="eyebrow">Content management</div><h2>Create an event</h2></div></div><div class="glass" style="padding:14px"><div class="field"><label>Event title</label><input id="ntitle" placeholder="Event name"></div><div class="field"><label>Category</label><select id="ncat"><option>Music</option><option>Food</option><option>Sports</option><option>Nightlife</option><option>Culture</option><option>Business</option></select></div><div class="field"><label>Venue / town</label><input id="nvenue" placeholder="Venue, town"></div><div class="field"><label>Date</label><input id="ndate" type="date"></div><div class="field"><label>Start time</label><input id="ntime" type="time"></div><div class="field"><label>Event pictures and poster</label><div class="upload-zone" onclick="document.getElementById('nimages').click()"><div class="upload-icon">＋</div><b>Choose pictures from your phone</b><span>Pick multiple photos at once. JPG, PNG, WEBP and other supported image formats.</span><small>No image links or URLs needed.</small></div><input id="nimages" type="file" accept="image/*" multiple hidden onchange="previewUploads(this.files)"><div id="uploadpreview" class="upload-preview"></div></div><div class="field"><label>Ticket types for this event</label><p class="muted" style="margin:4px 0 10px">Choose one or more ticket categories and set a price and quantity for each.</p><div id="ticketTypeRows"></div><button type="button" class="btn ghost full" style="margin-top:9px" onclick="addTicketTypeRow()">＋ Add another ticket type</button></div><div class="field"><label>Description</label><textarea id="ndesc" rows="3" placeholder="Event details"></textarea></div><button class="btn full" onclick="addEvent()">Publish event</button></div><div class="section"><div><div class="eyebrow">Payment operations</div><h2>Orders to review</h2></div><button class="link" onclick="exportCSV()">Export PDF</button></div><div id="adminorders"></div><div class="section"><div><div class="eyebrow">Inventory</div><h2>Manage events</h2></div></div><div id="adminevents"></div>
+<div class="section"><div><div class="eyebrow">Email verification</div><h2>Test ticket delivery</h2></div></div>
+<div class="glass adminitem"><p class="muted">Send a clearly marked sample ticket PDF to the configured test inbox. This creates no payment, order or real ticket.</p><button class="btn full" id="testTicketEmailBtn" onclick="sendTestTicketEmail()">Send test ticket email</button><p class="muted" id="testTicketEmailStatus" aria-live="polite">Test inbox: inventor8451l@gmail.com</p></div>
 <div class="section"><div><div class="eyebrow">System upkeep</div><h2>Storage & database maintenance</h2></div></div>
 <div class="glass adminitem">
  <p class="muted">Automatic maintenance runs every Thursday at 3:00 AM East Africa Time. It removes only technical job-run logs older than 30 days. Orders, payment records, tickets, QR codes, scan history, events and event images are not touched.</p>
@@ -671,6 +673,22 @@ async function loadAdminOrders(){
   }));
   return {id:o.id,reference:o.booking_reference||o.id,name:o.customer_name||'',email:o.customer_email||'',phone:o.customer_phone||'',total:Number(o.total_amount||0),currency:o.currency||'KES',status:o.status||'pending',created:o.created_at,receipt:o.mpesa_receipt_number||o.payment_reference||'',paidAt:o.paid_at,items};
  });
+}
+async function sendTestTicketEmail(){
+ if(!s.admin)return toast('Sign in as an administrator first');
+ const button=document.getElementById('testTicketEmailBtn'),status=document.getElementById('testTicketEmailStatus');
+ if(button.disabled)return;
+ button.disabled=true;button.textContent='Sending sample PDF…';status.textContent='Checking administrator session and sending the sample email…';
+ try{
+  const {data,error}=await supabaseClient.auth.getSession();if(error)throw error;
+  const token=data.session?.access_token;if(!token)throw new Error('Your admin session has expired. Sign in again.');
+  const response=await fetch(SUPABASE_URL+'/functions/v1/admin-test-ticket-email',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token,'apikey':SUPABASE_ANON_KEY},body:JSON.stringify({email:'inventor8451l@gmail.com'})});
+  const result=await response.json().catch(()=>({}));
+  if(!response.ok||!result.ok)throw new Error(result.error||'Email request failed (HTTP '+response.status+')');
+  status.textContent='Accepted by email provider. Check inbox and spam at inventor8451l@gmail.com. Message ID: '+(result.message_id||'not supplied');
+  toast('Test email accepted by provider. Check the inbox.');
+ }catch(error){console.error('Test ticket email failed:',error);status.textContent='Not sent: '+(error.message||'Unknown error');toast('Test email failed: '+(error.message||'check connection'))}
+ finally{button.disabled=false;button.textContent='Send test ticket email'}
 }
 async function renderAdmin(){
  if(!s.admin)return;
