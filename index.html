@@ -678,8 +678,6 @@ async function renderAdmin(){
  if(!s.admin)return;
  if(document.getElementById('ticketTypeRows')&&!document.getElementById('ticketTypeRows').children.length){ticketTypeRowCount=0;addTicketTypeRow('Regular')}
  try{
- if(!s.admin)return;
- try{
   await loadEvents();
   await loadAdminOrders();
   document.getElementById('statEvents').textContent=s.events.length;
