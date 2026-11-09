@@ -479,13 +479,28 @@ let swanPdfLibraryPromise=null;
 function loadSwanPdfLibrary(){
  if(window.jspdf?.jsPDF)return Promise.resolve(window.jspdf.jsPDF);
  if(swanPdfLibraryPromise)return swanPdfLibraryPromise;
- swanPdfLibraryPromise=new Promise((resolve,reject)=>{
-  const script=document.createElement('script');
-  script.src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js';
-  script.onload=()=>window.jspdf?.jsPDF?resolve(window.jspdf.jsPDF):reject(new Error('PDF engine did not initialise'));
-  script.onerror=()=>reject(new Error('Could not load the PDF engine. Check your internet connection and try again.'));
-  document.head.appendChild(script);
- });
+ swanPdfLibraryPromise=(async()=>{
+  const sources=[
+   'https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js',
+   'https://unpkg.com/jspdf@2.5.2/dist/jspdf.umd.min.js',
+   'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js'
+  ];
+  let lastError=null;
+  for(const src of sources){
+   try{
+    await new Promise((resolve,reject)=>{
+     const script=document.createElement('script');
+     script.src=src;
+     script.async=true;
+     script.onload=()=>window.jspdf?.jsPDF?resolve():reject(new Error('PDF library loaded but did not initialise'));
+     script.onerror=()=>{script.remove();reject(new Error('Could not load PDF library from '+new URL(src).hostname))};
+     document.head.appendChild(script);
+    });
+    if(window.jspdf?.jsPDF)return window.jspdf.jsPDF;
+   }catch(error){lastError=error;console.warn('SWAN PDF library source failed:',src,error)}
+  }
+  throw new Error('The PDF engine could not be reached from the available CDNs. Last error: '+(lastError?.message||'unknown network error'));
+ })().catch(error=>{swanPdfLibraryPromise=null;throw error});
  return swanPdfLibraryPromise;
 }
 async function printSwanTicket(id,emailMode=false){
