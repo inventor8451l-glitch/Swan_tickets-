@@ -485,8 +485,7 @@ async function printSwanTicket(id){
  if(!card)return toast('Ticket is not available');
  const qr=card.querySelector('.swan-qr canvas');
  if(!qr)return toast('Ticket QR code is still loading. Try again in a moment.');
- const button=card.querySelector('.swan-ticket-actions button');
- const oldLabel=button?.textContent;
+ const button=card.querySelector('.swan-ticket-actions button'),oldLabel=button?.textContent;
  if(button){button.disabled=true;button.textContent='Preparing PDF…'}
  const read=(selector,fallback='')=>card.querySelector(selector)?.textContent?.trim()||fallback;
  const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -497,15 +496,9 @@ async function printSwanTicket(id){
   const facts=Array.from(card.querySelectorAll('.swan-ticket-fact span')).map(x=>x.textContent.trim());
   const dateText=facts[0]||'DATE TBA',timeText=facts[1]||'TIME TBA',venue=facts[2]||'VENUE TBA';
   const customer=card.querySelector('.swan-ticket-customer-grid>div b')?.textContent?.trim()||'Ticket holder';
-  const booking=read('.swan-ticket-booking b','—');
-  const category=read('.swan-ticket-category','GENERAL ADMISSION').toUpperCase();
+  const booking=read('.swan-ticket-booking b','—'),category=read('.swan-ticket-category','GENERAL ADMISSION').toUpperCase();
   const variant=card.classList.contains('swan-vvip')?'vvip':card.classList.contains('swan-vip')?'vip':card.classList.contains('swan-earlybird')?'earlybird':'regular';
-  const palettes={
-   vvip:{bg:'#100b05',panel:'#211706',ink:'#f5d98e',accent:'#d2a548',muted:'#c8b77f',edge:'#8c6423'},
-   vip:{bg:'#0d1017',panel:'#20242e',ink:'#f4f1e9',accent:'#c5cbd5',muted:'#b9c0ca',edge:'#777f8c'},
-   earlybird:{bg:'#fbfaf6',panel:'#efede7',ink:'#171717',accent:'#5f5a50',muted:'#625f58',edge:'#c7c2b8'},
-   regular:{bg:'#e8dff1',panel:'#d7e6ec',ink:'#18172a',accent:'#645b88',muted:'#4c4a62',edge:'#9384b3'}
-  };
+  const palettes={vvip:{bg:'#100b05',panel:'#211706',ink:'#f5d98e',accent:'#d2a548',muted:'#c8b77f',edge:'#8c6423'},vip:{bg:'#0d1017',panel:'#20242e',ink:'#f4f1e9',accent:'#c5cbd5',muted:'#b9c0ca',edge:'#777f8c'},earlybird:{bg:'#fbfaf6',panel:'#efede7',ink:'#171717',accent:'#5f5a50',muted:'#625f58',edge:'#c7c2b8'},regular:{bg:'#e8dff1',panel:'#d7e6ec',ink:'#18172a',accent:'#645b88',muted:'#4c4a62',edge:'#9384b3'}};
   const p=palettes[variant],qrImage=qr.toDataURL('image/png');
   const wrapper=document.createElement('div');
   wrapper.style.cssText='position:fixed;left:-12000px;top:0;width:180mm;height:75mm;margin:0;padding:0;overflow:hidden;background:'+p.bg+';z-index:-1;';
@@ -546,7 +539,131 @@ async function printSwanTicket(id){
   }finally{wrapper.remove()}
  }catch(err){console.error('Ticket PDF generation failed:',err);toast(err.message||'Could not generate the ticket PDF')}
  finally{if(button){button.disabled=false;button.textContent=oldLabel||'Download PDF'}}
-}catch(err){
+}
+async function runManualMaintenance(){
+ if(!s.admin)return toast('Sign in as an administrator first');
+ if(!confirm('Run safe maintenance now? Only technical job-run logs older than 30 days will be deleted. All customer, payment, ticket, QR, scan, event and image records will be preserved.'))return;
+ const button=document.getElementById('maintenanceRunBtn');
+ const status=document.getElementById('maintenanceStatus');
+ if(button)button.disabled=true;
+ try{
+  const {data,error}=await supabaseClient.rpc('run_swan_weekly_maintenance');
+  if(error)throw error;
+  const deleted=Number(data?.deleted_old_cron_runs||0);
+  if(status)status.textContent='Last manual run: '+new Date(data.ran_at||Date.now()).toLocaleString('en-KE')+' · Old technical logs removed: '+deleted;
+  showAppDialog('Maintenance completed',deleted+' old technical job-run log(s) removed. Business records and event files were left untouched.', '', 'success', 'OK');
+ }catch(error){
+  console.error('Maintenance failed:',error);
+  if(status)status.textContent='Maintenance could not run: '+(error.message||'Unknown error');
+  showAppDialog('Maintenance could not run',error.message||'Please try again later.','', 'danger', 'OK');
+ }finally{if(button)button.disabled=false}
+}
+async function adminLogin(){const email=document.getElementById('adminemail').value.trim(),password=document.getElementById('adminpass').value;if(!email||!password)return toast('Enter your admin email and password');try{const {data,error}=await supabaseClient.auth.signInWithPassword({email,password});if(error)throw error;const {data:admin,error:checkError}=await supabaseClient.from('admin_users').select('user_id').eq('user_id',data.user.id).maybeSingle();if(checkError)throw checkError;if(!admin){await supabaseClient.auth.signOut();throw new Error('This account is not authorised as a SWAN TICKETS admin.')}s.admin=true;document.getElementById('adminlogin').style.display='none';document.getElementById('dashboard').style.display='block';await renderAdmin();populateScanEvents();toast('Admin signed in')}catch(e){toast(e.message||'Sign-in failed')}}async function logout(){await stopTicketScanner();await supabaseClient.auth.signOut();s.admin=false;document.getElementById('adminlogin').style.display='block';document.getElementById('dashboard').style.display='none';document.getElementById('adminpass').value=''}
+let ticketScanner=null,scannerBusy=false,lastScannedPayload='',lastScannedAt=0;
+let scanAccepted=0,scanRejected=0,scanSessionHistory=[];
+function populateScanEvents(){
+ const sel=document.getElementById('scanEvent');if(!sel)return;
+ const current=sel.value;
+ sel.innerHTML='<option value="">All events</option>'+s.events.map(e=>'<option value="'+esc(e.id)+'">'+esc(e.title)+'</option>').join('');
+ if(current&&s.events.some(e=>e.id===current))sel.value=current;
+}
+function setScannerState(label){const e=document.getElementById('scannerState');if(e)e.textContent=label;}
+function showScanResult(result,data){
+ const accepted=result==='accepted'||result==='valid_preview';
+ const titles={accepted:'VALID TICKET — ADMIT','valid_preview':'VALID TICKET — NOT CHECKED IN',already_used:'ALREADY USED — DO NOT ADMIT',cancelled:'CANCELLED TICKET — DO NOT ADMIT',invalid:'INVALID QR — DO NOT ADMIT',unpaid:'PAYMENT NOT CONFIRMED — DO NOT ADMIT',wrong_event:'WRONG EVENT — DO NOT ADMIT'};
+ const title=titles[result]||'SCAN FAILED — DO NOT ADMIT';
+ const fields=[['Attendee',data.attendee_name],['Ticket',data.ticket_number],['Ticket type',data.ticket_type],['Event',data.event_title],['Booking ref',data.booking_reference],['Previously scanned',data.scanned_at?new Date(data.scanned_at).toLocaleString('en-KE'):null]];
+ const details='<div class="scan-meta">'+fields.filter(x=>x[1]).map(x=>'<div><span>'+esc(x[0])+'</span><b>'+esc(x[1])+'</b></div>').join('')+'</div>';
+ showAppDialog(title,data.message||(result==='valid_preview'?'Ticket is valid. No check-in was recorded.':accepted?'Ticket verified. Admit this attendee.':'Do not admit. This ticket could not be accepted.'),details,accepted?'success':'danger',result==='valid_preview'?'Close preview':'Continue scanning',()=>{lastScannedPayload='';});
+ if(navigator.vibrate)navigator.vibrate(accepted?[70]:[160,70,160]);
+}
+function addScanHistory(result,data){
+ const accepted=result==='accepted';if(accepted)scanAccepted++;else scanRejected++;
+ document.getElementById('scanAcceptedCount').textContent=scanAccepted;
+ document.getElementById('scanRejectedCount').textContent=scanRejected;
+ scanSessionHistory.unshift({result,data,at:new Date()});scanSessionHistory=scanSessionHistory.slice(0,8);
+ document.getElementById('scanHistory').innerHTML=scanSessionHistory.map(x=>'<div class="scan-log"><div><b>'+esc(x.data.ticket_number||x.data.message||'Unrecognised QR')+'</b><span class="muted">'+esc(x.data.attendee_name||'')+' · '+x.at.toLocaleTimeString('en-KE')+'</span></div><span class="status">'+(x.result==='accepted'?'ACCEPTED':esc(x.result.toUpperCase()))+'</span></div>').join('');
+}
+async function validateTicketPayload(payload){
+ const clean=String(payload||'').trim();if(!clean)return;
+ const now=Date.now();if(scannerBusy||appDialogOpen)return;
+ if(clean===lastScannedPayload&&now-lastScannedAt<2200)return;
+ lastScannedPayload=clean;lastScannedAt=now;scannerBusy=true;
+ try{
+  const eventId=document.getElementById('scanEvent')?.value||null;
+  const {data,error}=await supabaseClient.rpc('scan_swan_ticket',{p_qr_payload:clean,p_event_id:eventId});
+  if(error)throw error;
+  const result=data?.result||'invalid';showScanResult(result,data||{});addScanHistory(result,data||{});
+ }catch(error){
+  console.error('Ticket scan validation failed:',error);
+  showScanResult('error',{message:'Could not verify with the server. Check the connection and scan again.'});
+  addScanHistory('error',{message:'Server verification failed'});
+ }finally{
+  scannerBusy=false;
+  const manual=document.getElementById('manualQr');if(manual)manual.value='';
+ }
+}
+async function startTicketScanner(){
+ if(!s.admin)return toast('Sign in as an administrator first');
+ if(!window.Html5Qrcode)return toast('Scanner library did not load. Refresh and try again.');
+ if(ticketScanner)return;
+ try{
+  document.getElementById('scannerCamera').innerHTML='';
+  ticketScanner=new Html5Qrcode('scannerCamera',{verbose:false});
+  await ticketScanner.start({facingMode:'environment'},{fps:15,qrbox:{width:245,height:245},aspectRatio:1.0},
+   decoded=>{validateTicketPayload(decoded);},()=>{});
+  setScannerState('Camera active');
+  document.getElementById('scannerStartBtn').disabled=true;
+  document.getElementById('scannerStopBtn').disabled=false;
+ }catch(error){
+  console.error('Camera start failed:',error);ticketScanner=null;setScannerState('Camera unavailable');
+  toast('Camera unavailable. Allow camera access or use manual QR entry.');
+ }
+}
+async function stopTicketScanner(){
+ if(!ticketScanner){setScannerState('Camera off');return;}
+ const active=ticketScanner;ticketScanner=null;
+ try{await active.stop();await active.clear();}catch(error){console.warn('Scanner stop:',error);}
+ setScannerState('Camera off');
+ const start=document.getElementById('scannerStartBtn'),stop=document.getElementById('scannerStopBtn');
+ if(start)start.disabled=false;if(stop)stop.disabled=true;
+}
+async function previewManualTicket(){const clean=String(document.getElementById('manualQr')?.value||'').trim();if(!clean)return toast('Paste the decoded QR text first');if(scannerBusy||appDialogOpen)return;scannerBusy=true;try{const eventId=document.getElementById('scanEvent')?.value||null;const {data,error}=await supabaseClient.rpc('preview_swan_ticket',{p_qr_payload:clean,p_event_id:eventId});if(error)throw error;showScanResult(data?.result||'invalid',data||{});}catch(error){console.error('Ticket preview failed:',error);showScanResult('error',{message:'Could not check this ticket. Verify the QR text and connection.'});}finally{scannerBusy=false;}}
+function submitManualTicket(){validateTicketPayload(document.getElementById('manualQr').value);}
+let adminOrders=[];
+async function loadAdminOrders(){
+ const target=document.getElementById('adminorders');
+ target.innerHTML='<p class="muted">Loading live orders…</p>';
+ const {data:rows,error}=await supabaseClient.from('orders')
+  .select('id,booking_reference,customer_name,customer_email,customer_phone,total_amount,currency,status,created_at,mpesa_receipt_number,payment_reference,paid_at,order_items(quantity,unit_price,ticket_types(name,events(title,starts_at,venue)))')
+  .order('created_at',{ascending:false});
+ if(error)throw error;
+ adminOrders=(rows||[]).map(o=>{
+  const items=(o.order_items||[]).map(i=>({
+   quantity:Number(i.quantity||0),unitPrice:Number(i.unit_price||0),
+   ticketType:i.ticket_types?.name||'Ticket type unavailable',
+   event:i.ticket_types?.events?.title||'Event unavailable',
+   eventDate:i.ticket_types?.events?.starts_at||null,
+   venue:i.ticket_types?.events?.venue||''
+  }));
+  return {id:o.id,reference:o.booking_reference||o.id,name:o.customer_name||'',email:o.customer_email||'',phone:o.customer_phone||'',total:Number(o.total_amount||0),currency:o.currency||'KES',status:o.status||'pending',created:o.created_at,receipt:o.mpesa_receipt_number||o.payment_reference||'',paidAt:o.paid_at,items};
+ });
+}
+async function renderAdmin(){
+ if(!s.admin)return;
+ try{
+  await loadEvents();
+  await loadAdminOrders();
+  document.getElementById('statEvents').textContent=s.events.length;
+  document.getElementById('statOrders').textContent=adminOrders.length;
+  document.getElementById('statPending').textContent=adminOrders.filter(o=>o.status==='pending').length;
+  document.getElementById('statSold').textContent=adminOrders.filter(o=>o.status==='paid').reduce((sum,o)=>sum+o.items.reduce((n,i)=>n+i.quantity,0),0);
+  document.getElementById('adminorders').innerHTML=adminOrders.length?adminOrders.map(o=>{
+   const itemText=o.items.map(i=>esc(i.event)+' · '+esc(i.ticketType)+' × '+i.quantity).join('<br>');
+   return '<div class="glass adminitem"><div class="row"><b>'+esc(o.reference)+'</b><span class="status">'+esc(o.status.toUpperCase())+'</span></div><p class="muted">'+esc(o.name)+'<br>'+esc(o.email)+'<br>'+esc(o.phone)+'<br>'+itemText+'<br>M-Pesa receipt: '+esc(o.receipt||'Not available')+'<br>Created: '+esc(o.created||'')+'</p><div class="row"><b class="price">'+money(o.total)+'</b><span class="muted">'+o.items.reduce((n,i)=>n+i.quantity,0)+' ticket(s)</span></div></div>';
+  }).join(''):'<p class="muted">No orders have been recorded yet.</p>';
+  document.getElementById('adminevents').innerHTML=s.events.length?s.events.map(e=>'<div class="glass adminitem"><div class="row"><b>'+esc(e.title)+'</b><span class="status">'+esc(e.category)+'</span></div><p class="muted">'+date(e.date)+' · '+esc(e.time)+' · '+esc(e.venue)+'<br>From '+money(Math.min(...e.tickets.map(t=>t.price)))+'</p>'+(e.images&&e.images.length?'<div class="upload-preview">'+e.images.slice(0,3).map(url=>'<div class="upload-thumb"><img src="'+esc(url)+'" alt="Event image"></div>').join('')+'</div>':'')+'<button class="btn small ghost" onclick="deleteEvent(\''+esc(e.id)+'\')">Delete event</button></div>').join(''):'<p class="muted">No events have been added yet.</p>';
+ }catch(err){
   console.error('Admin dashboard load failed:',err);
   document.getElementById('adminorders').innerHTML='<p class="muted">Could not load live orders: '+esc(err.message||'database error')+'</p>';
   toast('Admin data could not be loaded. Check access permissions.');
