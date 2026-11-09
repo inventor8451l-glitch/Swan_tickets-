@@ -488,38 +488,57 @@ async function printSwanTicket(id){
  const button=card.querySelector('.swan-ticket-actions button');
  const oldLabel=button?.textContent;
  if(button){button.disabled=true;button.textContent='Preparing PDF…'}
+ const read=(selector,fallback='')=>card.querySelector(selector)?.textContent?.trim()||fallback;
+ const escapePdf=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  try{
   const html2pdf=await loadSwanPdfLibrary();
-  const clean=card.cloneNode(true);
-  const qrImage=qr.toDataURL('image/png');
-  clean.querySelector('.swan-qr').innerHTML='<img src="'+qrImage+'" alt="Ticket QR code" style="display:block;width:100%;height:100%;object-fit:contain">';
-  clean.querySelector('.swan-ticket-actions')?.remove();
+  const ticketNo=read('.swan-ticket-number-value',String(id).slice(0,8));
+  const eventTitle=read('.swan-ticket-event','Event admission');
+  const facts=Array.from(card.querySelectorAll('.swan-ticket-fact span')).map(x=>x.textContent.trim());
+  const dateText=facts[0]||'DATE TBA',timeText=facts[1]||'TIME TBA',venue=facts[2]||'VENUE TBA';
+  const customer=card.querySelector('.swan-ticket-customer-grid>div b')?.textContent?.trim()||'Ticket holder';
+  const booking=read('.swan-ticket-booking b','—');
+  const category=read('.swan-ticket-category','GENERAL ADMISSION').toUpperCase();
+  const variant=card.classList.contains('swan-vvip')?'vvip':card.classList.contains('swan-vip')?'vip':card.classList.contains('swan-earlybird')?'earlybird':'regular';
+  const palettes={vvip:{bg:'#100d08',panel:'#1c160b',ink:'#f4d58b',accent:'#c99b43',muted:'#c5b58e'},vip:{bg:'#101116',panel:'#1b1d25',ink:'#f1f1f4',accent:'#aeb5c3',muted:'#c1c4cc'},earlybird:{bg:'#f7f5ef',panel:'#eeece5',ink:'#171717',accent:'#777064',muted:'#5d5a54'},regular:{bg:'#d9d0ec',panel:'#c9dfe7',ink:'#17172a',accent:'#514c78',muted:'#46465d'}};
+  const p=palettes[variant],qrImage=qr.toDataURL('image/png');
   const wrapper=document.createElement('div');
-  wrapper.style.cssText='width:180mm;height:75mm;min-height:75mm;margin:0;padding:0;background:#fff;display:flex;align-items:stretch;justify-content:center;overflow:hidden;font-family:Arial,sans-serif;box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact;';
+  wrapper.style.cssText='position:fixed;left:-10000px;top:0;width:180mm;height:75mm;margin:0;padding:0;overflow:hidden;background:'+p.bg+';z-index:-1;';
   const style=document.createElement('style');
-  style.textContent=".swan-ticket{box-sizing:border-box!important;width:180mm!important;max-width:180mm!important;height:75mm!important;min-height:75mm!important;max-height:75mm!important;aspect-ratio:auto!important;margin:0!important;display:grid!important;grid-template-columns:40% 37% 23%!important;position:relative!important;overflow:hidden!important;border-radius:0!important;box-shadow:none!important;break-inside:avoid!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}.swan-ticket-brand-panel,.swan-ticket-info-panel,.swan-ticket-stub{min-width:0!important;min-height:0!important;box-sizing:border-box!important}.swan-ticket-brand-panel{padding:4mm 2mm!important}.swan-ticket-brand-art{width:25mm!important;max-width:25mm!important;min-width:0!important}.swan-ticket-wordmark b{font:bold 24pt/.95 Arial,sans-serif!important}.swan-ticket-wordmark span{font:bold 9pt/1.4 Arial,sans-serif!important}.swan-ticket-tagline{font:bold 6pt Arial,sans-serif!important}.swan-ticket-motto{font:bold 5pt Arial,sans-serif!important}.swan-ticket-info-panel{padding:4mm 3mm!important}.swan-ticket-event{font:bold 17pt/1.05 Georgia,serif!important;max-height:2.1em!important}.swan-ticket-facts{font:bold 7pt/1.2 Arial,sans-serif!important;gap:1.2mm!important;margin:2mm 0!important}.swan-ticket-category{font:bold 7pt Arial,sans-serif!important;padding:1.2mm 2mm!important}.swan-ticket-customer-grid{gap:1.5mm 3mm!important;margin-top:2mm!important}.swan-ticket-customer-grid small{font:bold 5pt Arial,sans-serif!important}.swan-ticket-customer-grid b{font:bold 7pt/1.15 Arial,sans-serif!important;margin-top:.5mm!important}.swan-ticket-stub{gap:1.5mm!important;padding:2mm!important}.swan-ticket-stub-label,.swan-ticket-validity{font:bold 5pt Arial,sans-serif!important}.swan-qr{width:31mm!important;height:31mm!important;min-width:31mm!important;min-height:31mm!important;padding:1mm!important;border-radius:0!important}.swan-qr img{width:29mm!important;height:29mm!important;max-width:none!important}.swan-ticket-admit{font:bold 8pt Arial,sans-serif!important;padding:1.5mm 2.5mm!important}.swan-ticket-actions{display:none!important}.swan-ticket:after{content:'';position:absolute;inset:1.5mm;z-index:0;border:0.25mm solid currentColor;opacity:.22;pointer-events:none}.swan-ticket-brand-panel,.swan-ticket-info-panel,.swan-ticket-stub{z-index:1}.swan-ticket-brand-panel:before{content:'';position:absolute;inset:2mm;border:.2mm solid currentColor;opacity:.2;pointer-events:none}.swan-ticket-brand-art{width:25mm!important;max-width:25mm!important;min-width:0!important;filter:drop-shadow(0 1mm 2mm #0004)}.swan-ticket-wordmark b{font:bold 25pt/.95 Arial,sans-serif!important;letter-spacing:.05em!important}.swan-ticket-info-panel{background:linear-gradient(135deg,#ffffff12,transparent 60%)!important}.swan-ticket-stub{background:linear-gradient(135deg,#0000000b,#ffffff12)!important;border-left:.3mm dashed currentColor!important}.swan-vvip{background-image:radial-gradient(circle at 12% 15%,#d6a84b30 0 1px,transparent 1.8px),radial-gradient(ellipse at 12% 50%,#9b6b2380 0,#241805 43%,transparent 70%),linear-gradient(125deg,#070604 0%,#211807 52%,#090805 100%)!important;background-color:#090805!important;background-size:100% 100%!important}.swan-earlybird{background-image:repeating-linear-gradient(135deg,#00000008 0 1px,transparent 1px 8px),linear-gradient(120deg,#fff 0%,#f2f0e9 55%,#fff 100%)!important;background-color:#fff!important;background-size:100% 100%!important}.swan-regular{background-image:repeating-linear-gradient(115deg,#ffffff35 0 1px,transparent 1px 7px),linear-gradient(118deg,#f5b8dc 0%,#b9e9f7 22%,#c9f1dd 43%,#fff0c9 64%,#d7c5f8 82%,#f7c5e7 100%)!important;background-color:#d7c5f8!important;background-size:100% 100%!important}.swan-vip{background-image:radial-gradient(circle at 12% 15%,#ffffff28 0 1px,transparent 1.8px),radial-gradient(ellipse at 16% 35%,#555965 0,#161820 46%,transparent 68%),linear-gradient(125deg,#07080b,#262a33 58%,#08090c)!important;background-color:#08090c!important;background-size:100% 100%!important}.swan-vvip{background-color:#090805!important;color:#f6d98b!important}.swan-earlybird{background-color:#fff!important;color:#171717!important}.swan-regular{background-color:#d7c5f8!important;color:#111426!important}.swan-vip{background-color:#08090c!important;color:#f1eee8!important}";;
-  wrapper.appendChild(style);
-  wrapper.appendChild(clean);
+  style.textContent=
+   '#swan-pdf-ticket,#swan-pdf-ticket *{box-sizing:border-box!important}'+
+   '#swan-pdf-ticket{width:180mm!important;height:75mm!important;display:grid!important;grid-template-columns:28% 48% 24%!important;overflow:hidden!important;position:relative!important;margin:0!important;padding:0!important;background:'+p.bg+'!important;color:'+p.ink+'!important;font-family:Arial,Helvetica,sans-serif!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}'+
+   '#swan-pdf-ticket:after{content:"";position:absolute;inset:2mm;border:.35mm solid '+p.accent+';opacity:.65;pointer-events:none;z-index:5}'+
+   '#swan-pdf-ticket .pdf-brand{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:5mm 3mm;background:'+p.panel+';border-right:.35mm solid '+p.accent+';min-width:0}'+
+   '#swan-pdf-ticket .pdf-swan{width:19mm;height:19mm;display:block;margin-bottom:2mm;color:'+p.ink+'}'+
+   '#swan-pdf-ticket .pdf-brand-name{font-size:20pt;line-height:1;font-weight:900;letter-spacing:.08em}'+
+   '#swan-pdf-ticket .pdf-brand-sub{font-size:9pt;line-height:1.4;font-weight:800;letter-spacing:.36em;margin-left:.36em}'+
+   '#swan-pdf-ticket .pdf-brand-tag{font-size:6pt;letter-spacing:.16em;font-weight:700;margin-top:4mm;color:'+p.muted+'}'+
+   '#swan-pdf-ticket .pdf-info{display:flex;flex-direction:column;justify-content:center;min-width:0;padding:5mm 6mm}'+
+   '#swan-pdf-ticket .pdf-kicker{font-size:6pt;letter-spacing:.2em;font-weight:800;color:'+p.accent+';margin-bottom:1.5mm}'+
+   '#swan-pdf-ticket .pdf-event{font-family:Georgia,serif;font-size:22pt;line-height:1.04;font-weight:700;overflow-wrap:anywhere;max-height:2.1em;overflow:hidden;margin:0 0 2.5mm}'+
+   '#swan-pdf-ticket .pdf-category{align-self:flex-start;font-size:7pt;font-weight:900;letter-spacing:.1em;border:.3mm solid '+p.accent+';padding:1.2mm 2.5mm;margin-bottom:3mm}'+
+   '#swan-pdf-ticket .pdf-details{display:grid;grid-template-columns:1fr 1fr;gap:2.5mm 4mm}'+
+   '#swan-pdf-ticket .pdf-detail{min-width:0}'+
+   '#swan-pdf-ticket .pdf-detail small{display:block;font-size:5.5pt;letter-spacing:.12em;font-weight:800;color:'+p.muted+';margin-bottom:.8mm}'+
+   '#swan-pdf-ticket .pdf-detail b{display:block;font-size:9pt;line-height:1.15;font-weight:700;overflow-wrap:anywhere}'+
+   '#swan-pdf-ticket .pdf-booking{grid-column:1/-1;padding-top:1.5mm;border-top:.2mm solid '+p.accent+'66}'+
+   '#swan-pdf-ticket .pdf-stub{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2mm;padding:3mm 2mm;text-align:center;border-left:.4mm dashed '+p.accent+';background:'+p.panel+';min-width:0}'+
+   '#swan-pdf-ticket .pdf-scan{font-size:7pt;font-weight:900;letter-spacing:.16em}'+
+   '#swan-pdf-ticket .pdf-qr{width:32mm;height:32mm;padding:1mm;background:#fff;display:block;object-fit:contain}'+
+   '#swan-pdf-ticket .pdf-ticket-no{font-size:6pt;font-weight:800;letter-spacing:.08em;overflow-wrap:anywhere}'+
+   '#swan-pdf-ticket .pdf-valid{font-size:6pt;font-weight:900;color:'+p.accent+';letter-spacing:.1em}';
+  const swan='<svg class="pdf-swan" viewBox="0 0 120 120" aria-hidden="true"><path d="M13 91c19-4 34-14 43-29 8-13 7-25-5-34-8-6-9-14-3-20 7-7 19-3 22 6 3 7-2 14-9 18 15 8 31 3 49-20-7 23-21 41-44 52-18 9-35 19-53 27Z" fill="currentColor"/><path d="m43 12 8-10 9 10 11-4-3 14H35l-3-14 11 4Z" fill="currentColor"/></svg>';
+  wrapper.innerHTML='<article id="swan-pdf-ticket"><section class="pdf-brand">'+swan+'<div class="pdf-brand-name">SWAN</div><div class="pdf-brand-sub">TICKETS</div><div class="pdf-brand-tag">THE GRAND EXPERIENCE</div></section><section class="pdf-info"><div class="pdf-kicker">OFFICIAL ADMISSION TICKET</div><h1 class="pdf-event">'+escapePdf(eventTitle)+'</h1><div class="pdf-category">'+escapePdf(category)+'</div><div class="pdf-details"><div class="pdf-detail"><small>ATTENDEE</small><b>'+escapePdf(customer)+'</b></div><div class="pdf-detail"><small>DATE &amp; TIME</small><b>'+escapePdf(dateText)+' · '+escapePdf(timeText)+'</b></div><div class="pdf-detail"><small>VENUE</small><b>'+escapePdf(venue)+'</b></div><div class="pdf-detail pdf-booking"><small>BOOKING REFERENCE</small><b>'+escapePdf(booking)+'</b></div></div></section><aside class="pdf-stub"><div class="pdf-scan">SCAN AT ENTRY</div><img class="pdf-qr" src="'+qrImage+'" alt="Ticket QR code"><div class="pdf-ticket-no">TICKET NO. '+escapePdf(ticketNo)+'</div><div class="pdf-valid">VALID · ONE ENTRY</div></aside></article>';
+  wrapper.insertBefore(style,wrapper.firstChild);
   document.body.appendChild(wrapper);
-  const ticketNo=clean.querySelector('.swan-ticket-number-value')?.textContent?.trim()||String(id).slice(0,8);
   const filename='SWAN-TICKET-'+ticketNo.replace(/[^A-Z0-9-]/gi,'')+'.pdf';
   try{
-   await html2pdf().set({
-    margin:0,
-    filename,
-    image:{type:'jpeg',quality:0.99},
-    html2canvas:{scale:4,useCORS:true,allowTaint:false,backgroundColor:'#ffffff',logging:false,scrollX:0,scrollY:0,windowWidth:720,windowHeight:300},
-    jsPDF:{unit:'mm',format:[180,75],orientation:'landscape',compress:true},
-    pagebreak:{mode:['avoid-all']}
-   }).from(wrapper).save();
+   await html2pdf().set({margin:0,filename,image:{type:'png',quality:1},html2canvas:{scale:3,useCORS:true,allowTaint:false,backgroundColor:p.bg,logging:false,scrollX:0,scrollY:0,windowWidth:680,windowHeight:284},jsPDF:{unit:'mm',format:[180,75],orientation:'landscape',compress:true},pagebreak:{mode:['avoid-all']}}).from(wrapper.querySelector('#swan-pdf-ticket')).save();
    toast('Your ticket PDF has been downloaded');
   }finally{wrapper.remove()}
- }catch(err){
-  console.error('Ticket PDF generation failed:',err);
-  toast(err.message||'Could not generate the ticket PDF');
- }finally{
-  if(button){button.disabled=false;button.textContent=oldLabel||'Download PDF'}
- }
+ }catch(err){console.error('Ticket PDF generation failed:',err);toast(err.message||'Could not generate the ticket PDF')}
+ finally{if(button){button.disabled=false;button.textContent=oldLabel||'Download PDF'}}
 }
 async function runManualMaintenance(){
  if(!s.admin)return toast('Sign in as an administrator first');
