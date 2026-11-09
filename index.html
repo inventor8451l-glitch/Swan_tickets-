@@ -501,66 +501,62 @@ async function printSwanTicket(id){
   const category=clean(read('.swan-ticket-category','GENERAL ADMISSION')).toUpperCase();
   const variant=card.classList.contains('swan-vvip')?'vvip':card.classList.contains('swan-vip')?'vip':card.classList.contains('swan-earlybird')?'earlybird':'regular';
   const palettes={
-   vvip:{bg:[12,9,5],panel:[35,25,9],ink:[246,220,151],accent:[210,165,72],muted:[205,184,130],edge:[142,101,35]},
-   vip:{bg:[10,12,18],panel:[34,37,46],ink:[245,243,235],accent:[194,201,213],muted:[190,196,205],edge:[120,129,143]},
-   earlybird:{bg:[250,249,245],panel:[239,237,230],ink:[24,24,23],accent:[95,90,80],muted:[91,89,82],edge:[195,190,179]},
-   regular:{bg:[225,222,239],panel:[197,222,231],ink:[26,25,44],accent:[104,91,147],muted:[75,72,98],edge:[147,132,179]}
+   vvip:{bg:[10,9,7],panel:[25,21,14],ink:[246,225,177],accent:[201,158,73],muted:[190,174,137],edge:[133,104,52],badge:[201,158,73],badgeInk:[20,16,9]},
+   vip:{bg:[17,19,22],panel:[43,46,51],ink:[245,245,242],accent:[190,196,202],muted:[190,196,202],edge:[112,120,129],badge:[190,196,202],badgeInk:[21,23,26]},
+   earlybird:{bg:[252,251,247],panel:[243,242,237],ink:[28,29,27],accent:[105,105,96],muted:[105,105,96],edge:[205,202,193],badge:[38,40,37],badgeInk:[255,255,255]},
+   regular:{bg:[235,240,236],panel:[220,229,222],ink:[31,46,38],accent:[103,132,114],muted:[85,105,92],edge:[166,184,171],badge:[103,132,114],badgeInk:[255,255,255]}
   };
   const p=palettes[variant];
   const rect=(x,y,w,h,fill)=>{doc.setFillColor(...fill);doc.rect(x,y,w,h,'F')};
   const line=(x1,y1,x2,y2,color,width=0.25,dash)=>{doc.setDrawColor(...color);doc.setLineWidth(width);if(dash)doc.setLineDashPattern(dash,0);doc.line(x1,y1,x2,y2);if(dash)doc.setLineDashPattern([],0)};
   const text=(value,x,y,size,color,bold=false,font='helvetica')=>{doc.setFont(font,bold?'bold':'normal');doc.setFontSize(size);doc.setTextColor(...color);doc.text(String(value),x,y)};
   const fit=(value,maxWidth,size,min=7,font='helvetica')=>{let n=size;doc.setFont(font,'bold');while(n>min&&doc.getTextWidth(value)>maxWidth){n-=.5;doc.setFontSize(n)}return n};
-  rect(0,0,180,75,p.bg);
-  rect(0,0,57,75,p.panel);
-  if(variant==='vvip'){
-   for(let i=0;i<18;i++){doc.setDrawColor(105,77,30);doc.setLineWidth(.12);doc.circle(5+(i*13)%48,5+(i*19)%64,.22,'S')}
-   line(2,2,55,2,p.accent,.5);line(2,73,55,73,p.accent,.5);
-  }else if(variant==='regular'){
-   for(let i=0;i<9;i++)line(i*8,0,i*8-35,75,[170+(i%3)*15,178+(i%2)*20,218],.35);
-  }else if(variant==='earlybird'){
-   for(let i=0;i<12;i++)line(3+i*5,0,0+i*5,75,[222,219,210],.16);
-  }
-  // Brand panel: fixed vector artwork, independent of browser CSS.
-  doc.setDrawColor(...p.accent);doc.setLineWidth(.45);doc.roundedRect(8,10,41,41,2,2,'S');
-  text('SWAN',28.5,29,19,p.ink,true);text('T I C K E T S',28.5,35,7,p.ink,true);
-  line(15,40,42,40,p.accent,.35);
-  text('THE GRAND EXPERIENCE',28.5,46,4.2,p.muted,true);
-  text('DREAM · ENTERTAIN · CONNECT',28.5,57,3.2,p.muted,true);
-  // Main information panel.
+  const swanSvg='<svg xmlns="http://www.w3.org/2000/svg" width="480" height="300" viewBox="0 0 480 300"><path fill="#ffffff" d="M35 220C75 158 190 137 278 176c42 18 79 19 126 2-37 45-99 68-174 68-82 0-151-9-195-26Z"/><path fill="#ffffff" d="M255 185c-27-30-29-76-5-112 19-29 53-37 75-19 19 16 13 45-12 60-15 9-28 13-31 28-4 20 18 45 57 61-39 10-68 1-84-18Z"/><path fill="#ffffff" d="M315 54c8-15 27-20 42-10 9 6 12 17 7 26-6 11-24 15-42 8Z"/><path fill="#d69a35" d="M356 69l49 8-46 12Z"/><path fill="none" stroke="#d9d9d9" stroke-width="5" stroke-linecap="round" d="M77 216c55-43 122-48 180-22M103 229c54-24 104-24 154-9M133 239c39-12 74-12 108-5"/><circle cx="350" cy="59" r="4" fill="#171717"/></svg>';
+  const svgImage=new Image();
+  const svgUrl='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(swanSvg);
+  await new Promise((resolve,reject)=>{svgImage.onload=resolve;svgImage.onerror=()=>reject(new Error('Could not prepare the swan artwork'));svgImage.src=svgUrl});
+  const swanCanvas=document.createElement('canvas');swanCanvas.width=480;swanCanvas.height=300;
+  const swanCtx=swanCanvas.getContext('2d');if(!swanCtx)throw new Error('Swan artwork canvas is unavailable');
+  swanCtx.clearRect(0,0,480,300);swanCtx.drawImage(svgImage,0,0);
+  const swanPng=swanCanvas.toDataURL('image/png');
+  rect(0,0,180,75,p.bg);rect(0,0,57,75,p.panel);rect(57,0,84,75,p.bg);rect(141,0,39,75,p.panel);
+  if(variant==='vvip'){line(2,2,55,2,p.accent,.55);line(2,73,55,73,p.accent,.55);line(4,4,4,71,p.accent,.25);line(53,4,53,71,p.accent,.25)}
+  if(variant==='vip'){for(let i=0;i<5;i++)line(7,12+i*12,50,3+i*12,p.edge,.18)}
+  if(variant==='earlybird'){for(let i=0;i<8;i++)line(4+i*7,0,0+i*7,75,p.edge,.12)}
+  if(variant==='regular'){for(let i=0;i<5;i++)line(4,12+i*12,53,4+i*12,p.edge,.16)}
+  doc.addImage(swanPng,'PNG',11,5,35,22,undefined,'FAST');
+  text('SWAN',28.5,39,16,p.ink,true,'times');
+  text('T I C K E T S',28.5,45,5.2,p.accent,true);
+  line(15,49,42,49,p.accent,.25);
+  text(variant==='vvip'?'VVIP ACCESS':variant==='vip'?'VIP ACCESS':variant==='earlybird'?'EARLY BIRD':'GENERAL ADMISSION',28.5,56,3.5,p.muted,true);
+  text('DREAM · BOOK · ATTEND',28.5,64,3.1,p.muted,true);
   line(57,3,57,72,p.edge,.35);
-  text('OFFICIAL ADMISSION',64,9,5.5,p.accent,true);
-  const titleSize=fit(eventTitle,79,17,9,'times');
+  text('OFFICIAL ADMISSION',64,9,5.2,p.accent,true);
+  const titleSize=fit(eventTitle,70,15,8,'times');
   doc.setFont('times','bold');doc.setFontSize(titleSize);doc.setTextColor(...p.ink);
-  const titleLines=doc.splitTextToSize(eventTitle,79).slice(0,2);
+  const titleLines=doc.splitTextToSize(eventTitle,70).slice(0,2);
   doc.text(titleLines,64,17);
   const titleBottom=17+(titleLines.length-1)*titleSize*.42;
-  rect(64,titleBottom+2,Math.min(47,Math.max(25,category.length*2.1+7)),7,p.accent);
-  text(category,67,titleBottom+6.8,5.2,variant==='earlybird'||variant==='regular'?[255,255,255]:p.bg,true);
+  rect(64,titleBottom+2,Math.min(47,Math.max(25,category.length*2.1+7)),7,p.badge);
+  text(category,67,titleBottom+6.8,5.0,p.badgeInk,true);
   const infoY=titleBottom+15;
-  text('ATTENDEE',64,infoY,4.2,p.muted,true);text(customer,64,infoY+5,7.2,p.ink,true);
-  text('DATE & TIME',64,infoY+13,4.2,p.muted,true);
-  const dateLine=dateText+' · '+timeText;
-  const dateSize=fit(dateLine,78,6.5,4.5);
+  text('ATTENDEE',64,infoY,4.0,p.muted,true);text(customer,64,infoY+5,6.8,p.ink,true);
+  text('DATE & TIME',64,infoY+13,4.0,p.muted,true);
+  const dateLine=dateText+' · '+timeText;const dateSize=fit(dateLine,70,6.1,4.2);
   text(dateLine,64,infoY+18,dateSize,p.ink,true);
-  text('VENUE',64,infoY+26,4.2,p.muted,true);
-  const venueSize=fit(venue,78,6.5,4.5);text(venue,64,infoY+31,venueSize,p.ink,true);
-  line(64,infoY+35,137,infoY+35,p.accent,.25);
-  text('BOOKING REF.  '+booking,64,infoY+40,4.5,p.muted,true);
-  // QR stub: separate fixed-width panel.
-  rect(141,0,39,75,p.panel);
-  line(141,2,141,73,p.accent,.45,[1.2,1.2]);
-  text('SCAN AT ENTRY',160.5,9,5,p.ink,true);
+  text('VENUE',64,infoY+26,4.0,p.muted,true);
+  const venueSize=fit(venue,70,6.1,4.2);text(venue,64,infoY+31,venueSize,p.ink,true);
+  line(64,infoY+35,137,infoY+35,p.edge,.25);
+  text('BOOKING REF.  '+booking,64,infoY+40,4.1,p.muted,true);
+  line(141,2,141,73,p.accent,.4,[1.2,1.2]);
+  text('SCAN AT ENTRY',160.5,9,4.5,p.ink,true);
   const qrData=qrNode.tagName.toLowerCase()==='canvas'?qrNode.toDataURL('image/png'):qrNode.src;
-  doc.setFillColor(255,255,255);doc.rect(146,13,29,29,'F');
-  doc.addImage(qrData,'PNG',147,14,27,27,undefined,'FAST');
-  text('TICKET NO.',160.5,49,4,p.muted,true);
-  const noSize=fit(ticketNo,33,4.8,3.5);text(ticketNo,160.5,54,noSize,p.ink,true);
-  line(148,59,173,59,p.edge,.25);
-  text('VALID · ONE ENTRY',160.5,66,4.1,p.accent,true);
+  doc.setFillColor(255,255,255);doc.rect(146,13,29,29,'F');doc.addImage(qrData,'PNG',147,14,27,27,undefined,'FAST');
+  text('TICKET NO.',160.5,49,3.8,p.muted,true);
+  const noSize=fit(ticketNo,33,4.5,3.2);text(ticketNo,160.5,54,noSize,p.ink,true);
+  line(148,59,173,59,p.edge,.25);text('VALID · ONE ENTRY',160.5,66,3.7,p.accent,true);
   doc.setDrawColor(...p.edge);doc.setLineWidth(.45);doc.rect(1.5,1.5,177,72);
-  const filename='SWAN-TICKET-'+ticketNo.replace(/[^A-Z0-9-]/gi,'')+'.pdf';
-  doc.save(filename);
+  doc.save('SWAN-TICKET-'+ticketNo.replace(/[^A-Z0-9-]/gi,'')+'.pdf');
   toast('Your ticket PDF has been downloaded');
  }catch(err){console.error('SWAN PDF generation failed:',err);toast(err.message||'Could not generate the ticket PDF')}
  finally{if(button){button.disabled=false;button.textContent=oldLabel||'Download / Print PDF'}}
