@@ -464,7 +464,17 @@ function ticketCardMarkup(t){
  const venue=event.venue||event.city||'VENUE TBA';
  const attendee=t.attendee_name||t.orderName||'Ticket holder',ticketNo=t.ticket_number||'Pending';
  const booking=t.bookingReference||'—';
- const swan='<svg viewBox="0 0 120 120" aria-hidden="true"><path d="M13 91c19-4 34-14 43-29 8-13 7-25-5-34-8-6-9-14-3-20 7-7 19-3 22 6 3 7-2 14-9 18 15 8 31 3 49-20-7 23-21 41-44 52-18 9-35 19-53 27Z" fill="currentColor"/><path d="m43 12 8-10 9 10 11-4-3 14H35l-3-14 11 4Z" fill="currentColor"/><path d="M16 92c18-1 36-8 51-19" fill="none" stroke="currentColor" stroke-width="3" opacity=".5"/></svg>';
+ const swan=`<svg viewBox="0 0 200 200" role="img" aria-label="Crowned swan emblem" xmlns="http://www.w3.org/2000/svg">
+ <circle cx="100" cy="100" r="88" fill="none" stroke="currentColor" stroke-width="1.5" opacity=".42"/>
+ <circle cx="100" cy="100" r="80" fill="none" stroke="currentColor" stroke-width=".7" stroke-dasharray="1.5 5" opacity=".65"/>
+ <path d="M42 145c18-2 34-9 48-20 13-10 23-24 28-39 5-16 2-29-9-38-7-6-10-14-7-21 3-8 12-12 20-9 8 3 12 12 8 20-2 5-7 9-13 11 14 8 31 4 49-15-7 22-20 38-39 49-10 6-18 12-25 20 17 3 31 12 40 26-24-8-43-8-59-2-14 5-26 12-41 18Z" fill="currentColor"/>
+ <path d="M82 117c18-16 32-35 39-57 3-10 3-19-1-27 11 10 13 23 9 38-5 18-18 34-34 47-5 4-9 7-13 11Z" fill="none" stroke="currentColor" stroke-width="2" opacity=".58"/>
+ <path d="M56 139c23-2 42-12 58-28M66 148c20-2 36-9 51-21M79 156c15-2 27-7 38-14" fill="none" stroke="currentColor" stroke-width="1.5" opacity=".55"/>
+ <path d="m91 34 7-16 9 13 13-7-2 19H87l-2-19 6 10Z" fill="currentColor"/>
+ <path d="M88 43h31M92 48h23" stroke="currentColor" stroke-width="2" opacity=".85"/>
+ <path d="M132 56l4-7 4 7 7 2-7 3-4 7-4-7-7-3 7-2ZM48 82l3-6 3 6 6 2-6 2-3 6-3-6-6-2 6-2Z" fill="currentColor" opacity=".72"/>
+ <path d="M38 162c17 8 38 12 62 12s45-4 62-12" fill="none" stroke="currentColor" stroke-width="1.2" opacity=".4"/>
+ </svg>` ;
  return '<article class="swan-ticket '+variant+'" id="swan-ticket-'+esc(t.id)+'">'+
  '<section class="swan-ticket-brand-panel"><div class="swan-ticket-brand-art">'+swan+'</div><div class="swan-ticket-wordmark"><b>SWAN</b><span>TICKETS</span></div><div class="swan-ticket-tagline">THE GRAND EXPERIENCE</div><div class="swan-ticket-motto">DREAM · ENTERTAIN · CONNECT</div></section>'+
  '<section class="swan-ticket-info-panel"><div class="swan-ticket-event">'+esc(event.title||'Event admission')+'</div>'+
