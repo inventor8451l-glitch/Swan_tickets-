@@ -700,7 +700,7 @@ async function sendTestTicketEmail(){
  const button=document.getElementById('testTicketEmailBtn'),status=document.getElementById('testTicketEmailStatus');
  const recipient=(document.getElementById('testTicketRecipient')?.value||'').trim();
  const category=(document.getElementById('testTicketCategory')?.value||'Regular').trim();
- if(!recipient||!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(recipient))return toast('Enter a valid recipient email address');
+ if(!recipient||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(recipient))return toast('Enter a valid recipient email address');
  if(!['VVIP','VIP','Early Bird','Regular'].includes(category))return toast('Choose a supported ticket category');
  if(button.disabled)return;
  button.disabled=true;button.textContent='Preparing exact ticket design…';status.textContent='Generating the selected SWAN ticket template…';
@@ -717,8 +717,8 @@ async function sendTestTicketEmail(){
   qrTarget.innerHTML='';
   new QRCode(qrTarget,{text:'SWAN-EMAIL-TEST-NOT-VALID',width:128,height:128,colorDark:'#101010',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M});
   const pdfData=await printSwanTicket(sampleId,true);
-  if(!pdfData||!pdfData.startsWith('data:application/pdf;base64,'))throw new Error('The sample ticket PDF could not be generated');
-  const pdfBase64=pdfData.split(',')[1];
+  if(!pdfData||!pdfData.startsWith('data:application/pdf')||!pdfData.includes(';base64,'))throw new Error('The sample ticket PDF could not be generated');
+  const pdfBase64=pdfData.slice(pdfData.indexOf(';base64,')+8);
   const {data,error}=await supabaseClient.auth.getSession();if(error)throw error;
   const token=data.session?.access_token;if(!token)throw new Error('Your admin session has expired. Sign in again.');
   button.textContent='Sending test PDF…';status.textContent='Sending the '+category+' sample to '+recipient+'…';
