@@ -488,7 +488,7 @@ async function printSwanTicket(id){
  const button=card.querySelector('.swan-ticket-actions button'),oldLabel=button?.textContent;
  if(button){button.disabled=true;button.textContent='Preparing PDF…'}
  const read=(selector,fallback='')=>card.querySelector(selector)?.textContent?.trim()||fallback;
- const clean=value=>String(value??'').replace(/\\s+/g,' ').trim();
+ const clean=value=>String(value??'').replace(/\s+/g,' ').trim();
  try{
   const JsPDF=await loadSwanPdfLibrary();
   const doc=new JsPDF({orientation:'landscape',unit:'mm',format:[180,75],compress:true});
