@@ -211,6 +211,18 @@ body{background:radial-gradient(ellipse at 15% 0,#15134a 0,transparent 34%),radi
 .swan-vvip{--ticket-accent:#f5bd45}.swan-vip{--ticket-accent:#49d9ff}.swan-earlybird{--ticket-accent:#ff6f9f}.swan-regular{--ticket-accent:#8df0a9}
 @media(max-width:480px){.swan-ticket{border-radius:20px;padding:5.2% 5.4% 0}.swan-ticket:after{inset:5px;border-radius:16px}.swan-ticket-header{gap:10px}.swan-ticket-brand-name{font-size:clamp(18px,5.4vw,26px)}.swan-ticket-brand-sub{font-size:clamp(7px,1.8vw,10px);gap:7px;letter-spacing:.2em;margin-top:7px}.swan-ticket-logo{min-width:48px}.swan-ticket-event-heading{font-size:clamp(25px,7.8vw,37px)}.swan-ticket-admission-grid small,.swan-ticket-issued small,.swan-ticket-identifiers small{font-size:clamp(8px,2vw,10px)}.swan-ticket-admission-grid b{font-size:clamp(13px,3.5vw,17px)}.swan-ticket-admission-grid em{font-size:8px;padding:6px 9px}.swan-ticket-admission-grid span{font-size:11px}.swan-ticket-symbol{width:43px;height:43px;font-size:28px}.swan-ticket-issued{gap:12px}.swan-ticket-issued b{font-size:clamp(19px,5vw,25px)}.swan-ticket-identifiers>div{gap:6px;padding:0 3px}.swan-ticket-identifiers>div+div{padding-left:8px}.swan-ticket-identifiers .swan-ticket-symbol{width:28px;font-size:27px}.swan-ticket-identifiers b{font-size:clamp(10px,2.6vw,13px)}.swan-ticket-qr-frame{width:48%;border-radius:15px}.swan-ticket-footer{grid-template-columns:42px 1fr;gap:7px 10px;padding:3.5% 5.5%}.swan-ticket-security{width:40px;height:48px;font-size:29px}.swan-ticket-terms{font-size:clamp(8px,1.9vw,10px)}.swan-ticket-thanks{font-size:clamp(7px,1.6vw,9px);letter-spacing:.13em}.swan-ticket-actions{right:9px;top:9px}.swan-ticket-actions .btn{font-size:8px;padding:5px 7px}}
 
+
+/* SWAN TICKETS — regular category monochrome correction */
+.swan-ticket.swan-regular{--ticket-accent:#fff!important;--ticket-ink:#fff!important;--ticket-muted:#d0d0d0!important;background:#101114!important;background-image:none!important;color:#fff!important;border:1px solid #fff!important}
+.swan-ticket.swan-regular:before{background:linear-gradient(145deg,#181818,#090909 70%,#151515)!important}
+.swan-ticket.swan-regular:after{border-color:#ffffff30!important}
+.swan-ticket.swan-regular .swan-ticket-brand-sub,.swan-ticket.swan-regular .swan-ticket-admission-grid small,.swan-ticket.swan-regular .swan-ticket-issued small,.swan-ticket.swan-regular .swan-ticket-identifiers small,.swan-ticket.swan-regular .swan-ticket-symbol,.swan-ticket.swan-regular .swan-ticket-thanks,.swan-ticket.swan-regular .swan-ticket-security{color:#fff!important;border-color:#fff!important}
+.swan-ticket.swan-regular .swan-ticket-divider{background:linear-gradient(90deg,transparent,#fff 8%,#fff 92%,transparent)!important}
+.swan-ticket.swan-regular .swan-ticket-divider span{background:#fff!important}
+.swan-ticket.swan-regular .swan-ticket-admission-grid em{background:#fff!important;color:#101114!important}
+.swan-ticket.swan-regular .swan-ticket-qr-frame{border-color:#fff!important}
+.swan-ticket.swan-regular .swan-ticket-footer{background:#ffffff08!important}
+
 </style>
 <style id="swan-premium-responsive-theme">
 /* SWAN TICKETS — champagne, ivory and charcoal theme; responsive desktop system */
