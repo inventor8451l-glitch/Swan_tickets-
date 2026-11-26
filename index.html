@@ -1373,13 +1373,10 @@ async function renderAdmin(){
   await loadAdminOrders();
   document.getElementById('statEvents').textContent=s.events.length;
   document.getElementById('statOrders').textContent=adminOrders.length;
-  document.getElementById('statPending').textContent=adminOrders.filter(o=>o.status==='pending').length;
+  document.getElementById('statPending').textContent=adminOrders.filter(o=>['pending','review','requires_review','failed'].includes(String(o.status).toLowerCase())).length;
   document.getElementById('statSold').textContent=adminOrders.filter(o=>o.status==='paid').reduce((sum,o)=>sum+o.items.reduce((n,i)=>n+i.quantity,0),0);
   if(document.getElementById('adminAnalyticsView')?.style.display!=='none')renderAdminAnalytics();
-  document.getElementById('adminorders').innerHTML=adminOrders.length?adminOrders.map(o=>{
-   const itemText=o.items.map(i=>esc(i.event)+' · '+esc(i.ticketType)+' × '+i.quantity).join('<br>');
-   return '<div class="glass adminitem"><div class="row"><b>'+esc(o.reference)+'</b><span class="status">'+esc(o.status.toUpperCase())+'</span></div><p class="muted">'+esc(o.name)+'<br>'+esc(o.email)+'<br>'+esc(o.phone)+'<br>'+itemText+'<br>M-Pesa receipt: '+esc(o.receipt||'Not available')+'<br>Created: '+esc(o.created||'')+'</p><div class="row"><b class="price">'+money(o.total)+'</b><span class="muted">'+o.items.reduce((n,i)=>n+i.quantity,0)+' ticket(s)</span></div></div>';
-  }).join(''):'<p class="muted">No orders have been recorded yet.</p>';
+  renderAdminOrders();
   document.getElementById('adminevents').innerHTML=s.events.length?s.events.map(e=>'<div class="glass adminitem"><div class="row"><b>'+esc(e.title)+'</b><span class="status">'+esc(e.category)+'</span></div><p class="muted">'+date(e.date)+' · '+esc(e.time)+' · '+esc(e.venue)+'<br>From '+money(Math.min(...e.tickets.map(t=>t.price)))+'</p>'+(e.images&&e.images.length?'<div class="upload-preview">'+e.images.slice(0,3).map(url=>'<div class="upload-thumb"><img src="'+esc(url)+'" alt="Event image"></div>').join('')+'</div>':'')+'<button class="btn small ghost" onclick="deleteEvent(\''+esc(e.id)+'\')">Delete event</button></div>').join(''):'<p class="muted">No events have been added yet.</p>';
  }catch(err){
   console.error('Admin dashboard load failed:',err);
