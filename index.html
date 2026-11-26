@@ -808,6 +808,50 @@ button:not(:disabled):active::after{
  box-shadow:none!important;
  filter:none!important;
 }
+</style><style id="swan-admin-analytics-glass">
+#admin .glass,#admin .scanner-panel,#admin .adminitem{
+ background:linear-gradient(135deg,rgba(14,34,47,.34),rgba(13,25,39,.2))!important;
+ border:1px solid rgba(235,211,168,.28)!important;
+ box-shadow:inset 0 1px 0 rgba(255,255,255,.17),0 12px 32px rgba(0,0,0,.13)!important;
+ backdrop-filter:blur(15px) saturate(155%)!important;-webkit-backdrop-filter:blur(15px) saturate(155%)!important;
+}
+.admin-view-switch{display:flex;gap:9px;padding:5px;margin:17px 0 20px;border:1px solid rgba(235,211,168,.3);border-radius:16px;background:rgba(8,20,31,.16);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.admin-view-tab{flex:1;min-height:43px;border:1px solid transparent;border-radius:12px;background:transparent;color:#d9e2e4;font:700 13px system-ui;transition:.2s}
+.admin-view-tab.active{background:linear-gradient(130deg,#f5dfb1,#d5a653);color:#172630;box-shadow:0 3px 12px rgba(214,173,98,.2)}
+.admin-analytics-view{padding-bottom:20px}
+.analytics-heading{display:flex;justify-content:space-between;align-items:flex-end;gap:15px;margin:18px 0}
+.analytics-heading h2{margin:5px 0;font:30px Georgia,serif;color:#fff3dc}
+.analytics-controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.analytics-controls label{font-size:11px;color:#d8c49c}
+.analytics-controls select{min-height:38px;border-radius:11px;padding:7px 10px;background:rgba(8,22,32,.55);color:#fff;border:1px solid rgba(235,211,168,.36)}
+.analytics-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:14px}
+.analytics-kpi{padding:16px;border-radius:17px;min-width:0}
+.analytics-kpi span,.analytics-kpi small{display:block;color:#c0cbd0;font-size:11px}
+.analytics-kpi strong{display:block;margin:9px 0 5px;color:#f5d99f;font:700 clamp(17px,2vw,25px) Georgia,serif;overflow-wrap:anywhere}
+.analytics-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.analytics-panel{padding:17px;border-radius:19px;min-width:0}
+.analytics-panel-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:15px}
+.analytics-panel h3{font:20px Georgia,serif;color:#fff3df;margin:4px 0}
+.analytics-chip{padding:5px 9px;border-radius:99px;background:rgba(214,173,98,.16);color:#f3d69e;font-size:10px}
+.analytics-chart{height:205px;display:flex;flex-direction:column;justify-content:flex-end;min-width:0}
+.revenue-bars{height:165px;display:flex;align-items:flex-end;gap:4px;border-bottom:1px solid rgba(255,255,255,.16);padding:0 2px}
+.revenue-bar-wrap{flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;min-width:0;gap:5px}
+.revenue-bar{width:min(100%,22px);min-height:1px;border-radius:6px 6px 2px 2px;background:linear-gradient(180deg,#f7dda6,#bd8740);box-shadow:0 0 12px rgba(214,173,98,.16)}
+.revenue-bar-wrap small{height:14px;font-size:8px;color:#aebdc2;white-space:nowrap}
+.chart-axis{display:flex;justify-content:space-between;color:#aebdc2;font-size:10px;margin-top:8px}
+.analytics-rank{margin:13px 0}
+.analytics-rank-line{display:flex;justify-content:space-between;gap:10px;font-size:12px;color:#edf1ec}
+.analytics-rank-line b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.analytics-rank-line span{color:#f2d69e;white-space:nowrap}
+.analytics-track{height:7px;border-radius:99px;background:rgba(255,255,255,.1);overflow:hidden;margin:7px 0 4px}
+.analytics-track i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#7fc5ad,#d6ad62)}
+.analytics-rank small{font-size:10px;color:#aebdc2}
+.status-row{display:grid;grid-template-columns:80px 28px 1fr;align-items:center;gap:10px;margin:14px 0;color:#e9eee9;font-size:12px}
+.status-row b{color:#f4d69a}
+.status-row .analytics-track{margin:0}
+.status-row .status-paid{background:#7fc5ad}.status-row .status-pending{background:#d6ad62}.status-row .status-failed,.status-row .status-cancelled{background:#d67b76}
+.analytics-footnote{font-size:11px;line-height:1.6;color:#aebdc2;margin:15px 2px}
+@media(max-width:680px){.analytics-heading{align-items:flex-start;flex-direction:column}.analytics-controls{width:100%}.analytics-kpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.analytics-grid{grid-template-columns:1fr}.analytics-kpi{padding:13px}.analytics-panel{padding:14px}.analytics-panel h3{font-size:18px}}
 </style></head><body><div class="app"><header class="top"><div class="brand" onclick="go('home')"><img class="mark swan-brand-logo" src="https://raw.githubusercontent.com/inventor8451l-glitch/Swan_tickets-/main/870092544_1795728860364990.jpg" alt="Swan Tickets logo" width="44" height="44" decoding="async"><div><b>SWAN <span>TICKETS</span></b><small>GO WHERE YOU FEEL</small></div></div><div class="top-actions"><button class="round search-trigger" aria-label="Search events" onclick="go('events');setTimeout(()=>document.getElementById('search')?.focus(),80)"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg></button><button class="round top-cart-button" aria-label="Your cart" onclick="go('cart')"><span class="top-cart-badge" id="topCartBadge">0</span><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M1 1h4l2.7 13.1a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg></button></div></header><main>
 <section class="screen active" id="home"><div class="home-search"><input id="homeSearch" type="search" placeholder="Search events by title..." oninput="syncHomeSearch()"><button onclick="runHomeSearch()" aria-label="Search"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg></button></div><div class="featured-widget" id="featuredCarousel" aria-label="Featured events carousel"></div><div class="featured-dots" id="featuredDots" aria-label="Choose featured event"></div><div class="chips category-strip" id="homechips"></div><div class="section"><div><h2>Upcoming Events</h2></div><button class="link" onclick="go('events')">View all →</button></div><div class="grid home-event-grid" id="homeEventGrid"></div><div class="section"><div><h2>Trending Now</h2></div><button class="link" onclick="go('events')">View all →</button></div><div class="trending-wheel" id="trendingEventGrid" aria-label="Trending events carousel"><div class="wheel-track" id="trendingWheelTrack"></div><button class="wheel-control prev" onclick="moveTrending(-1)" aria-label="Previous trending event">‹</button><button class="wheel-control next" onclick="moveTrending(1)" aria-label="Next trending event">›</button><div class="wheel-dots" id="trendingWheelDots"></div></div></section>
 <section class="screen" id="events"><div class="eyebrow">The good stuff</div><h1 style="font:34px Georgia;margin:5px 0">Explore events</h1><input class="search" id="search" placeholder="Search events, venues..." oninput="renderEvents()"><div class="chips" id="eventchips"></div><div class="section"><div><div class="eyebrow">Discover what's on</div><h2>Coming up</h2></div><span class="muted" id="count"></span></div><div class="grid" id="eventgrid"></div></section>
@@ -886,8 +930,8 @@ button:not(:disabled):active::after{
  <p>For booking and Platform questions, use the official contact channels published in the Help Centre. The operator should publish its full legal name, business or registration status where applicable, service address and working phone/email contact before accepting public transactions. Until those details are added, this contact section is incomplete and must be finalised before launch.</p></div></details>
  <style>.terms-copy{font-size:12px;line-height:1.8;color:#e8dfd1}.terms-copy p{margin:10px 0}.terms-copy b{color:#ffe2a0}#termsAndConditions summary{list-style:none;font-weight:800;color:var(--gold);cursor:pointer}#termsAndConditions summary::-webkit-details-marker{display:none}#termsAndConditions summary:after{content:'＋';float:right;color:var(--gold)}#termsAndConditions details[open] summary:after{content:'−'}</style>
 </div></section>
-<section class="screen" id="admin"><div class="eyebrow">Private workspace</div><h1 style="font:34px Georgia;margin:5px 0">Admin portal</h1><div id="adminlogin" class="glass" style="padding:15px;margin-top:12px"><h3>Admin sign in</h3><div class="field"><label>Email</label><input id="adminemail" type="email" autocomplete="username" placeholder="Admin email address"></div><div class="field"><label>Password</label><input id="adminpass" type="password" autocomplete="current-password" placeholder="Supabase admin password"></div><button class="btn full" onclick="adminLogin()">Sign in securely</button><p class="muted">Sign in with the authorised SWAN TICKETS administrator account.</p></div><div id="dashboard" style="display:none"><div class="stats"><div class="glass stat">Events<b id="statEvents">0</b></div><div class="glass stat">Orders<b id="statOrders">0</b></div><div class="glass stat">Pending review<b id="statPending">0</b></div><div class="glass stat">Tickets sold<b id="statSold">0</b></div></div>
-<div class="glass scanner-panel">
+<section class="screen" id="admin"><div class="eyebrow">Private workspace</div><h1 style="font:34px Georgia;margin:5px 0">Admin portal</h1><div id="adminlogin" class="glass" style="padding:15px;margin-top:12px"><h3>Admin sign in</h3><div class="field"><label>Email</label><input id="adminemail" type="email" autocomplete="username" placeholder="Admin email address"></div><div class="field"><label>Password</label><input id="adminpass" type="password" autocomplete="current-password" placeholder="Supabase admin password"></div><button class="btn full" onclick="adminLogin()">Sign in securely</button><p class="muted">Sign in with the authorised SWAN TICKETS administrator account.</p></div><div id="dashboard" style="display:none"><div class="stats"><div class="glass stat">Events<b id="statEvents">0</b></div><div class="glass stat">Orders<b id="statOrders">0</b></div><div class="glass stat">Pending review<b id="statPending">0</b></div><div class="glass stat">Tickets sold<b id="statSold">0</b></div></div><div class="admin-view-switch" role="tablist" aria-label="Admin workspace views"><button type="button" class="admin-view-tab active" id="adminOpsTab" onclick="showAdminView('operations')"><span>▤</span> Operations</button><button type="button" class="admin-view-tab" id="adminAnalyticsTab" onclick="showAdminView('analytics')"><span>◫</span> Analytics</button></div>
+<div id="adminOperationsView"><div class="glass scanner-panel">
  <div class="scanner-head"><div><div class="eyebrow">Gate operations</div><h2>QR ticket scanner</h2></div><span class="status" id="scannerState">Camera off</span></div>
  <p class="scan-hint">Scan each attendee's ticket QR. A green result means admission is authorised. Red results must not be admitted.</p>
  <div class="field"><label>Event check-in filter (optional)</label><select id="scanEvent" class="scan-field"><option value="">All events</option></select></div>
@@ -913,6 +957,23 @@ button:not(:disabled):active::after{
  <p class="muted">Automatic maintenance runs every Thursday at 3:00 AM East Africa Time. It removes only technical job-run logs older than 30 days. Orders, payment records, tickets, QR codes, scan history, events and event images are not touched.</p>
  <button class="btn ghost full" id="maintenanceRunBtn" onclick="runManualMaintenance()">Run safe cleanup now</button>
  <p class="muted" id="maintenanceStatus">Last run details will appear here after a manual cleanup.</p>
+</div>
+<button class="btn ghost full" onclick="logout()">Lock admin portal</button></div>
+<div id="adminAnalyticsView" class="admin-analytics-view" style="display:none">
+ <div class="analytics-heading"><div><div class="eyebrow">Business intelligence</div><h2>Sales analytics</h2><p class="muted">Live figures calculated from authorised order records.</p></div><div class="analytics-controls"><label for="analyticsRange">Reporting period</label><select id="analyticsRange" onchange="renderAdminAnalytics()"><option value="7">Last 7 days</option><option value="30" selected>Last 30 days</option><option value="90">Last 90 days</option><option value="all">All time</option></select><button class="btn ghost small" type="button" onclick="renderAdminAnalytics()">Refresh</button></div></div>
+ <div class="analytics-kpis">
+  <article class="glass analytics-kpi"><span>Revenue collected</span><strong id="analyticsRevenue">KES 0</strong><small id="analyticsRevenueNote">Paid orders only</small></article>
+  <article class="glass analytics-kpi"><span>Tickets sold</span><strong id="analyticsTickets">0</strong><small id="analyticsTicketsNote">Across paid orders</small></article>
+  <article class="glass analytics-kpi"><span>Paid orders</span><strong id="analyticsOrders">0</strong><small>Successful payments</small></article>
+  <article class="glass analytics-kpi"><span>Average order value</span><strong id="analyticsAov">KES 0</strong><small>Revenue ÷ paid orders</small></article>
+ </div>
+ <div class="analytics-grid">
+  <section class="glass analytics-panel"><div class="analytics-panel-head"><div><div class="eyebrow">Revenue trend</div><h3>Money collected over time</h3></div><span class="analytics-chip">KES</span></div><div id="analyticsRevenueChart" class="analytics-chart"></div></section>
+  <section class="glass analytics-panel"><div class="analytics-panel-head"><div><div class="eyebrow">Ticket performance</div><h3>Most popular ticket types</h3></div></div><div id="analyticsTicketChart" class="analytics-bars"></div></section>
+  <section class="glass analytics-panel"><div class="analytics-panel-head"><div><div class="eyebrow">Event performance</div><h3>Top events by revenue</h3></div></div><div id="analyticsEventChart" class="analytics-bars"></div></section>
+  <section class="glass analytics-panel"><div class="analytics-panel-head"><div><div class="eyebrow">Payment overview</div><h3>Order status breakdown</h3></div></div><div id="analyticsStatusChart" class="analytics-status"></div></section>
+ </div>
+ <p class="analytics-footnote">Revenue includes only orders marked paid. Pending, failed and cancelled orders are excluded. Figures use the order records currently accessible to the signed-in administrator.</p>
 </div>
 <button class="btn ghost full" onclick="logout()">Lock admin portal</button></div></section>
 </main><div id="appModal" class="app-modal" role="dialog" aria-modal="true" aria-labelledby="appModalTitle"><div class="app-modal-card" id="appModalCard"><div class="app-modal-kicker">SWAN TICKETS</div><h2 id="appModalTitle"></h2><div class="app-modal-message" id="appModalMessage"></div><div class="app-modal-details" id="appModalDetails"></div><div class="app-modal-actions"><button class="btn" id="appModalOk" type="button" onclick="closeAppDialog()">OK · Continue</button></div></div></div><nav class="bottom-nav" aria-label="Main navigation"><button class="active" data-tab="home" onclick="go('home')" aria-label="Home"><span><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg></span><small>Home</small></button><button data-tab="events" onclick="go('events')" aria-label="Events"><span><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2.5"/><path d="M7 3v4M17 3v4M3 10h18M8 14h3M8 17h6"/></svg></span><small>Events</small></button><button data-tab="help" onclick="go('help')" aria-label="Help and support"><span><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.2"/><path d="M9.6 9a2.5 2.5 0 1 1 4.2 1.8c-1.1 1-1.8 1.3-1.8 2.7"/><path d="M12 16.8h.01"/></svg></span><small>Help</small></button></nav><footer class="site-footer"><button class="footer-admin" type="button" aria-label="Copyright 2026. Admin access" onclick="go('admin')">© SWAN TICKETS 2026 · All rights reserved</button><span class="footer-note">Made for moments worth remembering.</span></footer><button class="floating-cart" onclick="go('cart')" aria-label="Open cart"><span class="fc-icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4h2l2.2 11.2a2 2 0 0 0 2 1.6h8.9a2 2 0 0 0 1.9-1.4L22 8H6"/><circle cx="10" cy="20" r="1.2"/><circle cx="18" cy="20" r="1.2"/></svg></span><span class="fc-label">Your cart</span><span class="fc-count" id="badge">0</span><span class="fc-total" id="floatingTotal">KES 0</span><span class="fc-arrow">↗</span></button><div id="toast" class="toast"></div></div>
@@ -1221,6 +1282,47 @@ async function sendTestTicketEmail(){
  }catch(error){console.error('Test ticket email failed:',error);status.textContent='Not sent: '+(error.message||'Unknown error');toast('Test email failed: '+(error.message||'check connection'))}
  finally{holder.remove();button.disabled=false;button.textContent='Send test ticket email'}
 }
+function showAdminView(view){
+ if(!s.admin)return;
+ const analytics=view==='analytics';
+ document.getElementById('adminOperationsView').style.display=analytics?'none':'block';
+ document.getElementById('adminAnalyticsView').style.display=analytics?'block':'none';
+ document.getElementById('adminOpsTab').classList.toggle('active',!analytics);
+ document.getElementById('adminAnalyticsTab').classList.toggle('active',analytics);
+ if(analytics)renderAdminAnalytics();
+}
+function renderAdminAnalytics(){
+ if(!s.admin)return;
+ const range=document.getElementById('analyticsRange')?.value||'30';
+ const now=Date.now(),cutoff=range==='all'?0:now-Number(range)*86400000;
+ const paid=adminOrders.filter(o=>o.status==='paid'&&Number.isFinite(Number(o.total))&&(Date.parse(o.paidAt||o.created)||0)>=cutoff);
+ const revenue=paid.reduce((n,o)=>n+Number(o.total||0),0);
+ const ticketCount=paid.reduce((n,o)=>n+o.items.reduce((a,i)=>a+Number(i.quantity||0),0),0);
+ const fmt=n=>'KES '+Number(n||0).toLocaleString('en-KE',{maximumFractionDigits:0});
+ const put=(id,value)=>{const el=document.getElementById(id);if(el)el.textContent=value};
+ put('analyticsRevenue',fmt(revenue));put('analyticsTickets',ticketCount.toLocaleString('en-KE'));put('analyticsOrders',paid.length.toLocaleString('en-KE'));put('analyticsAov',fmt(paid.length?revenue/paid.length:0));
+ put('analyticsRevenueNote',range==='all'?'All recorded paid orders':'Paid orders in the last '+range+' days');
+ const daily={};paid.forEach(o=>{const d=new Date(o.paidAt||o.created);if(!Number.isNaN(d.getTime())){const key=d.toISOString().slice(0,10);daily[key]=(daily[key]||0)+Number(o.total||0)}});
+ const days=range==='7'?7:range==='30'?30:range==='90'?90:Math.max(7,Math.min(30,Object.keys(daily).length||7));
+ const points=[];
+ if(range==='all'){
+  Object.keys(daily).sort().slice(-30).forEach(k=>points.push([k,daily[k]]));
+ }else{
+  for(let n=days-1;n>=0;n--){const d=new Date(now-n*86400000),key=d.toISOString().slice(0,10);points.push([key,daily[key]||0])}
+ }
+ const chart=document.getElementById('analyticsRevenueChart');
+ if(chart){
+  const max=Math.max(1,...points.map(p=>p[1]));
+  chart.innerHTML=points.length?'<div class="revenue-bars">'+points.map((p,i)=>'<div class="revenue-bar-wrap" title="'+p[0]+': '+fmt(p[1])+'"><div class="revenue-bar" style="height:'+Math.max(p[1]>0?4:1,p[1]/max*100)+'%"></div><small>'+((points.length<=7||i%Math.ceil(points.length/7)===0||i===points.length-1)?new Date(p[0]+'T00:00:00').toLocaleDateString('en-KE',{day:'numeric',month:'short'}):'')+'</small></div>').join('')+'</div><div class="chart-axis"><span>'+fmt(Math.min(...points.map(p=>p[1])))+'</span><span>Peak '+fmt(max)+'</span></div>':'<p class="muted">No paid revenue recorded for this period.</p>';
+ }
+ const aggregate=(key)=>{const m={};paid.forEach(o=>o.items.forEach(i=>{const name=i[key]||'Unspecified';if(!m[name])m[name]={qty:0,revenue:0};m[name].qty+=Number(i.quantity||0);m[name].revenue+=Number(i.quantity||0)*Number(i.unitPrice||0)}));return Object.entries(m).sort((a,b)=>b[1].qty-a[1].qty)};
+ const drawBars=(id,entries,metric,label)=>{const el=document.getElementById(id);if(!el)return;if(!entries.length){el.innerHTML='<p class="muted">No paid ticket sales in this period.</p>';return}const max=Math.max(1,...entries.slice(0,6).map(x=>x[1][metric]));el.innerHTML=entries.slice(0,6).map(([name,v])=>'<div class="analytics-rank"><div class="analytics-rank-line"><b>'+esc(name)+'</b><span>'+label(v[metric])+'</span></div><div class="analytics-track"><i style="width:'+Math.max(3,v[metric]/max*100)+'%"></i></div><small>'+v.qty+' ticket(s) sold · '+fmt(v.revenue)+'</small></div>').join('')};
+ drawBars('analyticsTicketChart',aggregate('ticketType'),'qty',v=>v.toLocaleString('en-KE')+' sold');
+ drawBars('analyticsEventChart',aggregate('event'),'revenue',fmt);
+ const statuses={paid:adminOrders.filter(o=>o.status==='paid').length,pending:adminOrders.filter(o=>o.status==='pending').length,failed:adminOrders.filter(o=>o.status==='failed').length,cancelled:adminOrders.filter(o=>o.status==='cancelled').length};
+ const statusEl=document.getElementById('analyticsStatusChart');
+ if(statusEl){const total=Object.values(statuses).reduce((a,b)=>a+b,0);statusEl.innerHTML=Object.entries(statuses).map(([name,n])=>'<div class="status-row"><span>'+name+'</span><b>'+n+'</b><div class="analytics-track"><i class="status-'+name+'" style="width:'+(total?n/total*100:0)+'%"></i></div></div>').join('')||'<p class="muted">No orders yet.</p>'}
+}
 async function renderAdmin(){
  if(!s.admin)return;
  if(document.getElementById('ticketTypeRows')&&!document.getElementById('ticketTypeRows').children.length){ticketTypeRowCount=0;addTicketTypeRow('Regular')}
@@ -1231,6 +1333,7 @@ async function renderAdmin(){
   document.getElementById('statOrders').textContent=adminOrders.length;
   document.getElementById('statPending').textContent=adminOrders.filter(o=>o.status==='pending').length;
   document.getElementById('statSold').textContent=adminOrders.filter(o=>o.status==='paid').reduce((sum,o)=>sum+o.items.reduce((n,i)=>n+i.quantity,0),0);
+  if(document.getElementById('adminAnalyticsView')?.style.display!=='none')renderAdminAnalytics();
   document.getElementById('adminorders').innerHTML=adminOrders.length?adminOrders.map(o=>{
    const itemText=o.items.map(i=>esc(i.event)+' · '+esc(i.ticketType)+' × '+i.quantity).join('<br>');
    return '<div class="glass adminitem"><div class="row"><b>'+esc(o.reference)+'</b><span class="status">'+esc(o.status.toUpperCase())+'</span></div><p class="muted">'+esc(o.name)+'<br>'+esc(o.email)+'<br>'+esc(o.phone)+'<br>'+itemText+'<br>M-Pesa receipt: '+esc(o.receipt||'Not available')+'<br>Created: '+esc(o.created||'')+'</p><div class="row"><b class="price">'+money(o.total)+'</b><span class="muted">'+o.items.reduce((n,i)=>n+i.quantity,0)+' ticket(s)</span></div></div>';
