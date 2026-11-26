@@ -973,9 +973,16 @@ button:not(:disabled):active::after{
 </div>
 <div class="section"><div><div class="eyebrow">System upkeep</div><h2>Storage & database maintenance</h2></div></div>
 <div class="glass adminitem">
- <p class="muted">Automatic maintenance runs every Thursday at 3:00 AM East Africa Time. It removes only technical job-run logs older than 30 days. Orders, payment records, tickets, QR codes, scan history, events and event images are not touched.</p>
- <button class="btn ghost full" id="maintenanceRunBtn" onclick="runManualMaintenance()">Run safe cleanup now</button>
+ <p class="muted">Automatic retention cleanup is configured separately. It will remove only eligible old operational records after the retention rule is confirmed. It will never remove admin accounts, payment/email settings or system configuration.</p>
+ <button class="btn ghost full" id="maintenanceRunBtn" onclick="runManualMaintenance()">Run technical log cleanup now</button>
  <p class="muted" id="maintenanceStatus">Last run details will appear here after a manual cleanup.</p>
+</div>
+<div class="glass adminitem" style="border:1px solid #ef777755;background:linear-gradient(145deg,#6b20201c,#ffffff04);margin-top:12px">
+ <div class="eyebrow" style="color:#ff9b91">Danger zone</div>
+ <h3 style="margin:7px 0;color:#ffe3dc">Full system reset</h3>
+ <p class="muted">Permanently removes all events, ticket types, orders, payment callback history, issued tickets, QR records, scan history, event posters and customer ticket files. Admin accounts, sign-in access, payment/email configuration, database structure and security policies remain.</p>
+ <button class="btn full" id="fullResetBtn" style="background:linear-gradient(120deg,#ffb1a6,#d75b55);color:#30100d" onclick="runAdminFullReset()">Reset all operational data</button>
+ <p class="muted" id="fullResetStatus" aria-live="polite">Requires the administrator password and the exact confirmation phrase.</p>
 </div>
 <button class="btn ghost full" onclick="logout()">Lock admin portal</button></div>
 <div id="adminOrdersView" class="admin-orders-view" style="display:none">
@@ -1160,6 +1167,41 @@ async function printSwanTicket(id,emailMode=false){
   toast(err.message||'Could not export the ticket PDF');
  }finally{
   if(button){button.disabled=false;button.textContent=oldLabel||'Download / Print PDF'}
+ }
+}
+async function runAdminFullReset(){
+ if(!s.admin)return toast('Sign in as an administrator first');
+ const {data:sessionData,error:sessionError}=await supabaseClient.auth.getSession();
+ if(sessionError||!sessionData.session?.user?.email)return toast('Your admin session has expired. Sign in again.');
+ const password=prompt('Re-enter the SWAN TICKETS administrator password to authorise this permanent reset:');
+ if(password===null)return;
+ if(!password)return toast('Password is required. Nothing was changed.');
+ const confirmation=prompt('This permanently clears all events, orders, tickets, QR scans and event/ticket files. Type exactly: RESET SWAN TICKETS');
+ if(confirmation===null)return;
+ if(confirmation!=='RESET SWAN TICKETS')return toast('Confirmation did not match. Nothing was changed.');
+ if(!confirm('FINAL WARNING: This cannot be undone. Admin accounts and system configuration will remain. Continue with the full reset?'))return;
+ const button=document.getElementById('fullResetBtn'),status=document.getElementById('fullResetStatus');
+ if(button){button.disabled=true;button.textContent='Resetting operational data…'}
+ if(status)status.textContent='Re-authenticating administrator and clearing records…';
+ try{
+  const {data,error}=await supabaseClient.functions.invoke('admin-full-reset',{body:{password,confirmation}});
+  if(error)throw error;
+  if(!data?.ok)throw new Error(data?.error||'Reset was not completed');
+  const storageNote=data.storage_complete?'All event and ticket files were removed.':'Some storage files could not be removed: '+JSON.stringify(data.storage);
+  s.events=[];s.cart=[];s.orders=[];s.active=null;save();
+  await loadEvents();await renderAdmin();populateScanEvents();
+  const summary=data.database?.deleted||{};
+  const total=Object.values(summary).reduce((n,v)=>n+Number(v||0),0);
+  if(status)status.textContent='Completed '+new Date().toLocaleString('en-KE')+' · '+total+' database records removed. '+storageNote;
+  showAppDialog(data.storage_complete?'Full reset completed':'Database reset completed with storage warning',
+   'Operational data removed: '+total+' records. '+storageNote+' Admin accounts and system configuration were preserved.',
+   '',data.storage_complete?'success':'warning','OK');
+ }catch(error){
+  console.error('Full system reset failed:',error);
+  if(status)status.textContent='Reset failed: '+(error.message||'Unknown error');
+  showAppDialog('Full reset failed',error.message||'No reset confirmation was received. Check the admin session and try again.','', 'danger','OK');
+ }finally{
+  if(button){button.disabled=false;button.textContent='Reset all operational data'}
  }
 }
 async function runManualMaintenance(){
