@@ -401,7 +401,205 @@ input:focus,select:focus,textarea:focus,button:focus-visible{outline:2px solid v
  .grid,.home-event-grid,.event-grid{gap:24px!important}
 }
 </style>
-<style id="swan-whatsapp-contact">.whatsapp-btn{background:#25D366!important;color:#fff!important;border:1px solid #25D366!important;box-shadow:0 7px 20px rgba(37,211,102,.20)!important;font-weight:800!important}.whatsapp-btn:active{background:#1ebe5d!important;transform:translateY(1px)}a.whatsapp-btn{color:#fff!important}</style></head><body><div class="app"><header class="top"><div class="brand" onclick="go('home')"><div class="mark">S</div><div><b>SWAN <span>TICKETS</span></b><small>GO WHERE YOU FEEL</small></div></div><div class="top-actions"><button class="round search-trigger" aria-label="Search events" onclick="go('events');setTimeout(()=>document.getElementById('search')?.focus(),80)"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg></button><button class="round" aria-label="Your cart" onclick="go('cart')"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M1 1h4l2.7 13.1a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg></button></div></header><main>
+<style id="swan-whatsapp-contact">.whatsapp-btn{background:#25D366!important;color:#fff!important;border:1px solid #25D366!important;box-shadow:0 7px 20px rgba(37,211,102,.20)!important;font-weight:800!important}.whatsapp-btn:active{background:#1ebe5d!important;transform:translateY(1px)}a.whatsapp-btn{color:#fff!important}</style>
+<style id="swan-premium-ui-refresh">
+:root{
+ --bg:#101722;--panel:rgba(24,34,48,.78);--glass:rgba(31,43,58,.68);
+ --line:rgba(244,211,145,.22);--gold:#e8bd69;--gold2:#ffe5ad;
+ --gold-deep:#b98235;--text:#fffaf1;--muted:#b6c0cc;
+ --success:#69d6ad;--accent:#8ecac4;
+}
+html{scroll-behavior:smooth}
+body{
+ color:var(--text);
+ background:
+ radial-gradient(ellipse at 8% -10%,rgba(190,137,63,.22),transparent 38%),
+ radial-gradient(ellipse at 92% 18%,rgba(75,123,139,.19),transparent 32%),
+ linear-gradient(160deg,#101722 0%,#131c29 55%,#0d141e 100%);
+ padding-bottom:150px;
+}
+.app{isolation:isolate}
+.top{
+ position:sticky;top:10px;margin:10px 12px 0;padding:11px 15px;
+ border:1px solid rgba(255,230,183,.25);border-radius:22px;
+ background:linear-gradient(120deg,rgba(37,48,63,.78),rgba(17,27,40,.72));
+ backdrop-filter:blur(26px) saturate(155%);-webkit-backdrop-filter:blur(26px) saturate(155%);
+ box-shadow:0 14px 38px rgba(0,0,0,.24),inset 0 1px 0 rgba(255,255,255,.13);
+}
+.brand{gap:12px;min-width:0}
+.mark.swan-brand-logo{
+ display:block;width:44px;height:44px;flex:none;object-fit:contain;
+ border:1px solid rgba(232,189,105,.72);border-radius:14px;
+ padding:3px;background:rgba(255,255,255,.94);
+ box-shadow:0 5px 20px rgba(232,189,105,.17);
+}
+.brand b{color:#fff7e8;letter-spacing:.14em}
+.brand b span{color:var(--gold2)}
+.brand small{color:#d3c09a;letter-spacing:.17em}
+.top-actions{gap:9px}
+.round{
+ width:42px;height:42px;display:grid;place-items:center;flex:none;
+ color:var(--gold2);border:1px solid rgba(255,226,173,.26);
+ background:linear-gradient(145deg,rgba(255,255,255,.13),rgba(255,255,255,.035));
+ backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+ box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 5px 15px rgba(0,0,0,.16);
+ transition:transform .2s,border-color .2s,background .2s;
+}
+.round:active{transform:scale(.94)}
+.screen{padding-top:20px}
+.eyebrow{color:var(--gold2)}
+.hero{
+ border-color:rgba(255,226,173,.35);
+ box-shadow:0 25px 65px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.12);
+}
+.hero h1 em{color:var(--gold2)}
+.section h2{color:#fff8eb}
+.btn{
+ min-height:46px;padding:13px 19px;border:1px solid rgba(255,235,194,.34);
+ border-radius:15px;
+ background:linear-gradient(135deg,#ffe9b7 0%,#e8bd69 55%,#c88c43 100%);
+ color:#202431;font-weight:850;letter-spacing:.01em;
+ box-shadow:0 8px 22px rgba(190,137,63,.2),inset 0 1px 0 rgba(255,255,255,.55);
+ transition:transform .18s ease,box-shadow .18s ease,filter .18s ease;
+}
+.btn:hover{filter:brightness(1.06);box-shadow:0 11px 28px rgba(190,137,63,.28),inset 0 1px 0 rgba(255,255,255,.6)}
+.btn:active{transform:translateY(1px) scale(.985)}
+.btn:disabled{opacity:.56;cursor:not-allowed;filter:saturate(.6)}
+.btn.ghost{
+ color:#fff4df;border:1px solid rgba(255,226,173,.27);
+ background:linear-gradient(135deg,rgba(255,255,255,.13),rgba(255,255,255,.045));
+ box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 5px 16px rgba(0,0,0,.12);
+ backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+}
+.btn.small{min-height:36px;padding:8px 13px}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{
+ outline:2px solid var(--gold2);outline-offset:3px;
+}
+.glass,.card,.event-card{
+ border-color:rgba(255,226,173,.18);
+ background:linear-gradient(145deg,rgba(255,255,255,.105),rgba(255,255,255,.025));
+ box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 16px 38px rgba(0,0,0,.2);
+}
+.chip{border-color:rgba(255,226,173,.2);background:rgba(255,255,255,.055)}
+.chip.active{background:linear-gradient(120deg,#ffe7b1,#d9a956);color:#202431}
+.price,.link{color:var(--gold2)}
+.field label{color:#e7d7b9;font-weight:700}
+.field input,.field select,.field textarea{
+ min-height:46px;color:#fffaf1;background:rgba(10,17,27,.52);
+ border:1px solid rgba(255,226,173,.2);border-radius:13px;
+}
+.field select option{background:#182536;color:#fff}
+.notice{border-color:rgba(232,189,105,.4);background:rgba(232,189,105,.09);color:#f4e7ce}
+.status{border-color:rgba(232,189,105,.4);background:rgba(232,189,105,.08);color:var(--gold2)}
+/* Floating liquid-glass navigation */
+.bottom-nav{
+ position:fixed!important;left:50%!important;bottom:calc(13px + env(safe-area-inset-bottom))!important;
+ transform:translateX(-50%)!important;width:min(340px,calc(100% - 34px))!important;
+ display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:7px!important;
+ padding:8px!important;border:1px solid rgba(255,226,173,.28)!important;border-radius:23px!important;
+ background:linear-gradient(125deg,rgba(45,58,72,.82),rgba(20,31,45,.76))!important;
+ backdrop-filter:blur(30px) saturate(165%)!important;-webkit-backdrop-filter:blur(30px) saturate(165%)!important;
+ box-shadow:0 15px 42px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.16)!important;
+ z-index:60!important;
+}
+.bottom-nav button{
+ min-width:0;min-height:53px;padding:6px 4px!important;border:1px solid transparent!important;
+ border-radius:16px!important;background:transparent!important;color:#c1c9d0!important;
+ font-size:10px!important;font-weight:750!important;letter-spacing:.02em;
+ transition:background .2s,color .2s,transform .2s;
+}
+.bottom-nav button span{display:block;font-size:19px;line-height:1.2;margin-bottom:3px}
+.bottom-nav button.active{
+ color:#ffe7b3!important;border-color:rgba(232,189,105,.24)!important;
+ background:linear-gradient(145deg,rgba(232,189,105,.2),rgba(255,255,255,.045))!important;
+ box-shadow:inset 0 1px 0 rgba(255,255,255,.12);
+}
+.bottom-nav button:active{transform:scale(.96)}
+.floating-cart{
+ bottom:calc(88px + env(safe-area-inset-bottom))!important;
+ border:1px solid rgba(255,226,173,.48)!important;
+ background:linear-gradient(115deg,rgba(57,69,79,.94),rgba(24,37,51,.94))!important;
+ box-shadow:0 14px 38px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.18)!important;
+ backdrop-filter:blur(28px) saturate(155%)!important;-webkit-backdrop-filter:blur(28px) saturate(155%)!important;
+}
+.fc-icon{background:rgba(232,189,105,.18)!important;color:#ffe5ad!important}
+.fc-count{background:rgba(232,189,105,.16)!important;color:#ffe5ad!important;border-color:rgba(232,189,105,.32)!important}
+.fc-total{color:#ffe5ad!important}
+.toast{
+ background:linear-gradient(120deg,#fff0ca,#e5bd70)!important;color:#202431!important;
+ box-shadow:0 12px 32px rgba(0,0,0,.3),inset 0 1px 0 #fff9!important;
+}
+/* Admin portal: clear hierarchy, spacious controls and consistent panels */
+#admin{max-width:100%;padding-top:24px}
+#admin>h1{color:#fff5e4;letter-spacing:-.035em}
+#admin #adminlogin,#admin #dashboard>.glass,#admin .adminitem,#admin .scanner-panel{
+ border:1px solid rgba(255,226,173,.2);border-radius:22px;
+ background:linear-gradient(145deg,rgba(255,255,255,.105),rgba(255,255,255,.035));
+ box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 18px 40px rgba(0,0,0,.2);
+}
+#admin #adminlogin{padding:22px!important}
+#admin #adminlogin h3{font:24px Georgia,serif;color:#fff1d5;margin:0 0 16px}
+#admin #dashboard{display:grid;gap:19px}
+#admin .stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+#admin .stat{min-width:0;padding:17px;border-radius:18px;color:#d6dce2;font-size:12px;font-weight:700}
+#admin .stat b{font:30px Georgia,serif;color:var(--gold2);margin-top:9px;overflow-wrap:anywhere}
+#admin .section{margin:10px 2px 5px;gap:12px;flex-wrap:wrap}
+#admin .section h2{font-size:23px;line-height:1.08}
+#admin .scanner-panel{padding:17px!important}
+#admin .scanner-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+#admin .scanner-head h2{margin:5px 0;font:25px Georgia,serif}
+#admin .scanner-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;margin:13px 0}
+#admin .scanner-actions .btn{width:100%;white-space:normal}
+#admin .field{margin:15px 0}
+#admin .field .btn{margin-top:9px}
+#admin .adminitem{padding:18px!important;margin:10px 0}
+#admin .adminitem .btn,#admin #adminlogin .btn{width:100%;margin:8px 0;white-space:normal}
+#admin #ticketTypeRows{display:grid;gap:12px}
+#admin .ticket-type-row{padding:15px!important;margin:0!important;border-radius:17px}
+#admin .ticket-type-row .field{margin:3px 0}
+#admin .ticket-type-row>button{width:100%;margin-top:2px}
+#admin #adminorders,#admin #adminevents,#admin #scanHistory{display:grid;gap:11px;min-width:0}
+#admin .adminitem p,#admin .scan-hint,#admin .muted{line-height:1.65}
+#admin .scanner-camera{border:1px solid rgba(232,189,105,.18);border-radius:17px;overflow:hidden;background:rgba(5,10,16,.45)}
+#admin .scan-counts{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0}
+#admin .scan-counts span{padding:9px 12px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.04)}
+#admin button{max-width:100%}
+#admin .field input,#admin .field select,#admin .field textarea{width:100%;min-width:0}
+#admin .status{white-space:normal}
+#admin .site-footer{margin-top:22px}
+.app-modal-card{border:1px solid rgba(232,189,105,.3);box-shadow:0 24px 70px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.12)}
+.app-modal.show .app-modal-card{animation:swan-modal-in .32s cubic-bezier(.2,.8,.2,1) both}
+@keyframes swan-modal-in{from{opacity:0;transform:translateY(16px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+.app-modal-card.success{border-color:rgba(105,214,173,.55);box-shadow:0 0 0 1px rgba(105,214,173,.12),0 24px 70px rgba(0,0,0,.45)}
+button[aria-busy="true"]{position:relative;pointer-events:none;opacity:.78}
+button[aria-busy="true"]::after{
+ content:"";display:inline-block;width:13px;height:13px;margin-left:9px;vertical-align:-2px;
+ border:2px solid currentColor;border-right-color:transparent;border-radius:50%;
+ animation:swan-spin .7s linear infinite;
+}
+@keyframes swan-spin{to{transform:rotate(360deg)}}
+@media(min-width:700px){
+ body{padding-bottom:120px}
+ .top{max-width:900px;margin:12px auto 0}
+ .bottom-nav{bottom:18px!important;width:360px!important}
+ .floating-cart{bottom:25px!important;left:auto!important;right:24px!important;transform:none!important;width:auto!important}
+ #admin .stats{grid-template-columns:repeat(4,minmax(0,1fr))}
+ #admin .scanner-panel{padding:24px!important}
+}
+@media(max-width:390px){
+ .top{margin:8px 8px 0;padding:10px 11px}
+ .mark.swan-brand-logo{width:39px;height:39px}
+ .brand b{font-size:11px}
+ .brand small{font-size:7px}
+ .screen{padding-left:13px;padding-right:13px}
+ #admin .scanner-actions{grid-template-columns:1fr}
+ .bottom-nav{width:min(320px,calc(100% - 28px))!important}
+}
+@media(hover:none){.btn:hover{filter:none}}
+@media(prefers-reduced-motion:reduce){
+ *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+</style></head><body><div class="app"><header class="top"><div class="brand" onclick="go('home')"><img class="mark swan-brand-logo" src="https://raw.githubusercontent.com/inventor8451l-glitch/Swan_tickets-/main/870092544_1795728860364990.jpg" alt="Swan Tickets logo" width="44" height="44" decoding="async"><div><b>SWAN <span>TICKETS</span></b><small>GO WHERE YOU FEEL</small></div></div><div class="top-actions"><button class="round search-trigger" aria-label="Search events" onclick="go('events');setTimeout(()=>document.getElementById('search')?.focus(),80)"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg></button><button class="round" aria-label="Your cart" onclick="go('cart')"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M1 1h4l2.7 13.1a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg></button></div></header><main>
 <section class="screen active" id="home"><div class="home-search"><input id="homeSearch" type="search" placeholder="Search events by title..." oninput="syncHomeSearch()"><button onclick="runHomeSearch()" aria-label="Search"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg></button></div><div class="featured-widget" id="featuredCarousel" aria-label="Featured events carousel"></div><div class="featured-dots" id="featuredDots" aria-label="Choose featured event"></div><div class="chips category-strip" id="homechips"></div><div class="section"><div><h2>Upcoming Events</h2></div><button class="link" onclick="go('events')">View all →</button></div><div class="grid home-event-grid" id="homeEventGrid"></div><div class="section"><div><h2>Trending Now</h2></div><button class="link" onclick="go('events')">View all →</button></div><div class="trending-wheel" id="trendingEventGrid" aria-label="Trending events carousel"><div class="wheel-track" id="trendingWheelTrack"></div><button class="wheel-control prev" onclick="moveTrending(-1)" aria-label="Previous trending event">‹</button><button class="wheel-control next" onclick="moveTrending(1)" aria-label="Next trending event">›</button><div class="wheel-dots" id="trendingWheelDots"></div></div></section>
 <section class="screen" id="events"><div class="eyebrow">The good stuff</div><h1 style="font:34px Georgia;margin:5px 0">Explore events</h1><input class="search" id="search" placeholder="Search events, venues..." oninput="renderEvents()"><div class="chips" id="eventchips"></div><div class="section"><div><div class="eyebrow">Discover what's on</div><h2>Coming up</h2></div><span class="muted" id="count"></span></div><div class="grid" id="eventgrid"></div></section>
 <section class="screen" id="detail"><button class="link" onclick="go('events')">← All events</button><div id="detailbody"></div></section>
