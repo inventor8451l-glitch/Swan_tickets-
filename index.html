@@ -793,6 +793,21 @@ button:not(:disabled):active::after{
 .round:active{transform:scale(.88)!important;background:rgba(228,184,95,.24)!important}
 @media(max-width:390px){.floating-cart{padding:10px 12px!important}.top-cart-badge{right:-4px;top:-5px}}
 @media(prefers-reduced-motion:reduce){.top-cart-badge,.btn,.round,.floating-cart{transition:none!important}button:not(:disabled):active::after{animation:none!important}}
+</style><style id="swan-cart-clean-edge">
+/* Remove the stray shadow/halo behind the floating cart. */
+.floating-cart{
+ box-shadow:none!important;
+ filter:none!important;
+ outline:0!important;
+}
+.floating-cart::before,.floating-cart::after{
+ content:none!important;
+ display:none!important;
+}
+.floating-cart .fc-icon{
+ box-shadow:none!important;
+ filter:none!important;
+}
 </style></head><body><div class="app"><header class="top"><div class="brand" onclick="go('home')"><img class="mark swan-brand-logo" src="https://raw.githubusercontent.com/inventor8451l-glitch/Swan_tickets-/main/870092544_1795728860364990.jpg" alt="Swan Tickets logo" width="44" height="44" decoding="async"><div><b>SWAN <span>TICKETS</span></b><small>GO WHERE YOU FEEL</small></div></div><div class="top-actions"><button class="round search-trigger" aria-label="Search events" onclick="go('events');setTimeout(()=>document.getElementById('search')?.focus(),80)"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg></button><button class="round top-cart-button" aria-label="Your cart" onclick="go('cart')"><span class="top-cart-badge" id="topCartBadge">0</span><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M1 1h4l2.7 13.1a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg></button></div></header><main>
 <section class="screen active" id="home"><div class="home-search"><input id="homeSearch" type="search" placeholder="Search events by title..." oninput="syncHomeSearch()"><button onclick="runHomeSearch()" aria-label="Search"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg></button></div><div class="featured-widget" id="featuredCarousel" aria-label="Featured events carousel"></div><div class="featured-dots" id="featuredDots" aria-label="Choose featured event"></div><div class="chips category-strip" id="homechips"></div><div class="section"><div><h2>Upcoming Events</h2></div><button class="link" onclick="go('events')">View all →</button></div><div class="grid home-event-grid" id="homeEventGrid"></div><div class="section"><div><h2>Trending Now</h2></div><button class="link" onclick="go('events')">View all →</button></div><div class="trending-wheel" id="trendingEventGrid" aria-label="Trending events carousel"><div class="wheel-track" id="trendingWheelTrack"></div><button class="wheel-control prev" onclick="moveTrending(-1)" aria-label="Previous trending event">‹</button><button class="wheel-control next" onclick="moveTrending(1)" aria-label="Next trending event">›</button><div class="wheel-dots" id="trendingWheelDots"></div></div></section>
 <section class="screen" id="events"><div class="eyebrow">The good stuff</div><h1 style="font:34px Georgia;margin:5px 0">Explore events</h1><input class="search" id="search" placeholder="Search events, venues..." oninput="renderEvents()"><div class="chips" id="eventchips"></div><div class="section"><div><div class="eyebrow">Discover what's on</div><h2>Coming up</h2></div><span class="muted" id="count"></span></div><div class="grid" id="eventgrid"></div></section>
