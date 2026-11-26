@@ -852,6 +852,25 @@ button:not(:disabled):active::after{
 .status-row .status-paid{background:#7fc5ad}.status-row .status-pending{background:#d6ad62}.status-row .status-failed,.status-row .status-cancelled{background:#d67b76}
 .analytics-footnote{font-size:11px;line-height:1.6;color:#aebdc2;margin:15px 2px}
 @media(max-width:680px){.analytics-heading{align-items:flex-start;flex-direction:column}.analytics-controls{width:100%}.analytics-kpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.analytics-grid{grid-template-columns:1fr}.analytics-kpi{padding:13px}.analytics-panel{padding:14px}.analytics-panel h3{font-size:18px}}
+</style><style id="swan-admin-orders-page">
+.admin-view-switch{flex-wrap:wrap}
+.admin-tab-count{display:inline-grid;place-items:center;min-width:19px;height:19px;padding:0 5px;border-radius:99px;background:rgba(255,255,255,.13);font-size:10px}
+.admin-tab-count.has-alert{background:#d9a64f;color:#19232b}
+.admin-orders-view{padding-bottom:24px}
+.orders-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:10px 0 15px;color:#c4d0d3;font-size:12px}
+.order-review-card{margin:0!important}
+.order-review-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.order-review-head h3{margin:5px 0;color:#fff3df;font-size:18px}
+.order-review-head small,.order-review-meta small{color:#aebdc2;overflow-wrap:anywhere}
+.order-status{padding:6px 9px;border-radius:99px;background:rgba(214,173,98,.17);color:#f5d99f;font-size:10px;font-weight:800;text-transform:uppercase}
+.order-status-paid{background:rgba(112,197,173,.16);color:#9de0c8}
+.order-status-failed,.order-status-cancelled{background:rgba(214,123,118,.16);color:#ffaaa3}
+.order-review-meta{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;margin:13px 0;color:#d7e0df;font-size:12px}
+.order-review-meta b{color:#f5d99f}
+.order-review-items{border-top:1px solid rgba(255,255,255,.1);padding-top:9px}
+.order-line{display:flex;justify-content:space-between;gap:12px;padding:5px 0;color:#d2dddc;font-size:12px}
+.order-line b{color:#f5d99f}
+@media(max-width:460px){.admin-view-tab{flex:1 1 30%;font-size:11px;padding:0 5px}.order-review-head{flex-direction:column}.orders-toolbar{align-items:flex-start}}
 </style></head><body><div class="app"><header class="top"><div class="brand" onclick="go('home')"><img class="mark swan-brand-logo" src="https://raw.githubusercontent.com/inventor8451l-glitch/Swan_tickets-/main/870092544_1795728860364990.jpg" alt="Swan Tickets logo" width="44" height="44" decoding="async"><div><b>SWAN <span>TICKETS</span></b><small>GO WHERE YOU FEEL</small></div></div><div class="top-actions"><button class="round search-trigger" aria-label="Search events" onclick="go('events');setTimeout(()=>document.getElementById('search')?.focus(),80)"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg></button><button class="round top-cart-button" aria-label="Your cart" onclick="go('cart')"><span class="top-cart-badge" id="topCartBadge">0</span><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M1 1h4l2.7 13.1a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg></button></div></header><main>
 <section class="screen active" id="home"><div class="home-search"><input id="homeSearch" type="search" placeholder="Search events by title..." oninput="syncHomeSearch()"><button onclick="runHomeSearch()" aria-label="Search"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg></button></div><div class="featured-widget" id="featuredCarousel" aria-label="Featured events carousel"></div><div class="featured-dots" id="featuredDots" aria-label="Choose featured event"></div><div class="chips category-strip" id="homechips"></div><div class="section"><div><h2>Upcoming Events</h2></div><button class="link" onclick="go('events')">View all →</button></div><div class="grid home-event-grid" id="homeEventGrid"></div><div class="section"><div><h2>Trending Now</h2></div><button class="link" onclick="go('events')">View all →</button></div><div class="trending-wheel" id="trendingEventGrid" aria-label="Trending events carousel"><div class="wheel-track" id="trendingWheelTrack"></div><button class="wheel-control prev" onclick="moveTrending(-1)" aria-label="Previous trending event">‹</button><button class="wheel-control next" onclick="moveTrending(1)" aria-label="Next trending event">›</button><div class="wheel-dots" id="trendingWheelDots"></div></div></section>
 <section class="screen" id="events"><div class="eyebrow">The good stuff</div><h1 style="font:34px Georgia;margin:5px 0">Explore events</h1><input class="search" id="search" placeholder="Search events, venues..." oninput="renderEvents()"><div class="chips" id="eventchips"></div><div class="section"><div><div class="eyebrow">Discover what's on</div><h2>Coming up</h2></div><span class="muted" id="count"></span></div><div class="grid" id="eventgrid"></div></section>
@@ -930,7 +949,7 @@ button:not(:disabled):active::after{
  <p>For booking and Platform questions, use the official contact channels published in the Help Centre. The operator should publish its full legal name, business or registration status where applicable, service address and working phone/email contact before accepting public transactions. Until those details are added, this contact section is incomplete and must be finalised before launch.</p></div></details>
  <style>.terms-copy{font-size:12px;line-height:1.8;color:#e8dfd1}.terms-copy p{margin:10px 0}.terms-copy b{color:#ffe2a0}#termsAndConditions summary{list-style:none;font-weight:800;color:var(--gold);cursor:pointer}#termsAndConditions summary::-webkit-details-marker{display:none}#termsAndConditions summary:after{content:'＋';float:right;color:var(--gold)}#termsAndConditions details[open] summary:after{content:'−'}</style>
 </div></section>
-<section class="screen" id="admin"><div class="eyebrow">Private workspace</div><h1 style="font:34px Georgia;margin:5px 0">Admin portal</h1><div id="adminlogin" class="glass" style="padding:15px;margin-top:12px"><h3>Admin sign in</h3><div class="field"><label>Email</label><input id="adminemail" type="email" autocomplete="username" placeholder="Admin email address"></div><div class="field"><label>Password</label><input id="adminpass" type="password" autocomplete="current-password" placeholder="Supabase admin password"></div><button class="btn full" onclick="adminLogin()">Sign in securely</button><p class="muted">Sign in with the authorised SWAN TICKETS administrator account.</p></div><div id="dashboard" style="display:none"><div class="stats"><div class="glass stat">Events<b id="statEvents">0</b></div><div class="glass stat">Orders<b id="statOrders">0</b></div><div class="glass stat">Pending review<b id="statPending">0</b></div><div class="glass stat">Tickets sold<b id="statSold">0</b></div></div><div class="admin-view-switch" role="tablist" aria-label="Admin workspace views"><button type="button" class="admin-view-tab active" id="adminOpsTab" onclick="showAdminView('operations')"><span>▤</span> Operations</button><button type="button" class="admin-view-tab" id="adminAnalyticsTab" onclick="showAdminView('analytics')"><span>◫</span> Analytics</button></div>
+<section class="screen" id="admin"><div class="eyebrow">Private workspace</div><h1 style="font:34px Georgia;margin:5px 0">Admin portal</h1><div id="adminlogin" class="glass" style="padding:15px;margin-top:12px"><h3>Admin sign in</h3><div class="field"><label>Email</label><input id="adminemail" type="email" autocomplete="username" placeholder="Admin email address"></div><div class="field"><label>Password</label><input id="adminpass" type="password" autocomplete="current-password" placeholder="Supabase admin password"></div><button class="btn full" onclick="adminLogin()">Sign in securely</button><p class="muted">Sign in with the authorised SWAN TICKETS administrator account.</p></div><div id="dashboard" style="display:none"><div class="stats"><div class="glass stat">Events<b id="statEvents">0</b></div><div class="glass stat">Orders<b id="statOrders">0</b></div><div class="glass stat">Pending review<b id="statPending">0</b></div><div class="glass stat">Tickets sold<b id="statSold">0</b></div></div><div class="admin-view-switch" role="tablist" aria-label="Admin workspace views"><button type="button" class="admin-view-tab active" id="adminOpsTab" onclick="showAdminView('operations')"><span>▤</span> Operations</button><button type="button" class="admin-view-tab" id="adminOrdersTab" onclick="showAdminView('orders')"><span>▣</span> Orders <span class="admin-tab-count" id="adminOrdersTabCount">0</span></button><button type="button" class="admin-view-tab" id="adminAnalyticsTab" onclick="showAdminView('analytics')"><span>◫</span> Analytics</button></div>
 <div id="adminOperationsView"><div class="glass scanner-panel">
  <div class="scanner-head"><div><div class="eyebrow">Gate operations</div><h2>QR ticket scanner</h2></div><span class="status" id="scannerState">Camera off</span></div>
  <p class="scan-hint">Scan each attendee's ticket QR. A green result means admission is authorised. Red results must not be admitted.</p>
@@ -943,7 +962,7 @@ button:not(:disabled):active::after{
  <div class="section"><div><div class="eyebrow">This session</div><h2>Recent scans</h2></div></div>
  <div id="scanHistory"><p class="muted">No scans in this session.</p></div>
 </div>
-<div class="section"><div><div class="eyebrow">Content management</div><h2>Create an event</h2></div></div><div class="glass" style="padding:14px"><div class="field"><label>Event title</label><input id="ntitle" placeholder="Event name"></div><div class="field"><label>Category</label><select id="ncat"><option>Music</option><option>Food</option><option>Sports</option><option>Nightlife</option><option>Culture</option><option>Business</option></select></div><div class="field"><label>Venue / town</label><input id="nvenue" placeholder="Venue, town"></div><div class="field"><label>Date</label><input id="ndate" type="date"></div><div class="field"><label>Start time</label><input id="ntime" type="time"></div><div class="field"><label>Event pictures and poster</label><div class="upload-zone" onclick="document.getElementById('nimages').click()"><div class="upload-icon">＋</div><b>Choose pictures from your phone</b><span>Pick multiple photos at once. JPG, PNG, WEBP and other supported image formats.</span><small>No image links or URLs needed.</small></div><input id="nimages" type="file" accept="image/*" multiple hidden onchange="previewUploads(this.files)"><div id="uploadpreview" class="upload-preview"></div></div><div class="field"><label>Ticket types for this event</label><p class="muted" style="margin:4px 0 10px">Choose one or more ticket categories and set a price and quantity for each.</p><div id="ticketTypeRows"></div><button type="button" class="btn ghost full" style="margin-top:9px" onclick="addTicketTypeRow()">＋ Add another ticket type</button></div><div class="field"><label>Description</label><textarea id="ndesc" rows="3" placeholder="Event details"></textarea></div><button class="btn full" onclick="addEvent()">Publish event</button></div><div class="section"><div><div class="eyebrow">Payment operations</div><h2>Orders to review</h2></div><button class="link" onclick="exportCSV()">Export PDF</button></div><div id="adminorders"></div><div class="section"><div><div class="eyebrow">Inventory</div><h2>Manage events</h2></div></div><div id="adminevents"></div>
+<div class="section"><div><div class="eyebrow">Content management</div><h2>Create an event</h2></div></div><div class="glass" style="padding:14px"><div class="field"><label>Event title</label><input id="ntitle" placeholder="Event name"></div><div class="field"><label>Category</label><select id="ncat"><option>Music</option><option>Food</option><option>Sports</option><option>Nightlife</option><option>Culture</option><option>Business</option></select></div><div class="field"><label>Venue / town</label><input id="nvenue" placeholder="Venue, town"></div><div class="field"><label>Date</label><input id="ndate" type="date"></div><div class="field"><label>Start time</label><input id="ntime" type="time"></div><div class="field"><label>Event pictures and poster</label><div class="upload-zone" onclick="document.getElementById('nimages').click()"><div class="upload-icon">＋</div><b>Choose pictures from your phone</b><span>Pick multiple photos at once. JPG, PNG, WEBP and other supported image formats.</span><small>No image links or URLs needed.</small></div><input id="nimages" type="file" accept="image/*" multiple hidden onchange="previewUploads(this.files)"><div id="uploadpreview" class="upload-preview"></div></div><div class="field"><label>Ticket types for this event</label><p class="muted" style="margin:4px 0 10px">Choose one or more ticket categories and set a price and quantity for each.</p><div id="ticketTypeRows"></div><button type="button" class="btn ghost full" style="margin-top:9px" onclick="addTicketTypeRow()">＋ Add another ticket type</button></div><div class="field"><label>Description</label><textarea id="ndesc" rows="3" placeholder="Event details"></textarea></div><button class="btn full" onclick="addEvent()">Publish event</button></div><div class="section"><div><div class="eyebrow">Inventory</div><h2>Manage events</h2></div></div><div id="adminevents"></div>
 <div class="section"><div><div class="eyebrow">Email verification</div><h2>Test ticket delivery</h2></div></div>
 <div class="glass adminitem">
  <p class="muted">Send a sample using the exact SWAN ticket artwork. This creates no payment, order or real ticket.</p>
@@ -959,6 +978,11 @@ button:not(:disabled):active::after{
  <p class="muted" id="maintenanceStatus">Last run details will appear here after a manual cleanup.</p>
 </div>
 <button class="btn ghost full" onclick="logout()">Lock admin portal</button></div>
+<div id="adminOrdersView" class="admin-orders-view" style="display:none">
+ <div class="analytics-heading"><div><div class="eyebrow">Payment operations</div><h2>Orders to review</h2><p class="muted">Review customer orders and payment status without scrolling through event management.</p></div><button class="btn ghost small" onclick="loadAdminOrders().then(renderAdminOrders).catch(e=>toast(e.message))">Refresh orders</button></div>
+ <div class="orders-toolbar"><span id="adminOrdersSummary">Loading orders…</span><button class="link" onclick="exportCSV()">Export PDF</button></div>
+ <div id="adminorders"></div>
+</div>
 <div id="adminAnalyticsView" class="admin-analytics-view" style="display:none">
  <div class="analytics-heading"><div><div class="eyebrow">Business intelligence</div><h2>Sales analytics</h2><p class="muted">Live figures calculated from authorised order records.</p></div><div class="analytics-controls"><label for="analyticsRange">Reporting period</label><select id="analyticsRange" onchange="renderAdminAnalytics()"><option value="7">Last 7 days</option><option value="30" selected>Last 30 days</option><option value="90">Last 90 days</option><option value="all">All time</option></select><button class="btn ghost small" type="button" onclick="renderAdminAnalytics()">Refresh</button></div></div>
  <div class="analytics-kpis">
@@ -1247,6 +1271,21 @@ async function loadAdminOrders(){
   return {id:o.id,reference:o.booking_reference||o.id,name:o.customer_name||'',email:o.customer_email||'',phone:o.customer_phone||'',total:Number(o.total_amount||0),currency:o.currency||'KES',status:o.status||'pending',created:o.created_at,receipt:o.mpesa_receipt_number||o.payment_reference||'',paidAt:o.paid_at,items};
  });
 }
+function renderAdminOrders(){
+ const host=document.getElementById('adminorders');if(!host)return;
+ const pending=adminOrders.filter(o=>['pending','review','requires_review','failed'].includes(String(o.status).toLowerCase()));
+ const summary=document.getElementById('adminOrdersSummary');if(summary)summary.textContent=adminOrders.length+' total orders · '+pending.length+' needing review';
+ const tabCount=document.getElementById('adminOrdersTabCount');if(tabCount){tabCount.textContent=pending.length;tabCount.classList.toggle('has-alert',pending.length>0)}
+ const badge=document.getElementById('statPending');if(badge)badge.textContent=pending.length;
+ if(!adminOrders.length){host.innerHTML='<div class="glass adminitem"><p class="muted">No orders have been recorded yet.</p></div>';return}
+ const escText=v=>esc(String(v??''));
+ host.innerHTML=adminOrders.map(o=>{
+  const status=String(o.status||'pending').toLowerCase();
+  const items=o.items.map(i=>'<div class="order-line"><span>'+escText(i.event)+' · '+escText(i.ticketType)+'</span><b>×'+Number(i.quantity||0)+'</b></div>').join('');
+  return '<article class="glass adminitem order-review-card"><div class="order-review-head"><div><span class="eyebrow">'+escText(o.reference)+'</span><h3>'+escText(o.name||'Customer')+'</h3><small>'+escText(o.email)+'</small></div><span class="order-status order-status-'+escText(status)+'">'+escText(status.replace(/_/g,' '))+'</span></div><div class="order-review-meta"><span>'+escText(o.phone)+'</span><b>'+escText(o.currency)+' '+Number(o.total||0).toLocaleString('en-KE')+'</b><small>'+new Date(o.created).toLocaleString('en-KE')+'</small></div><div class="order-review-items">'+items+'</div>'+(o.receipt?'<p class="muted">Payment reference: '+escText(o.receipt)+'</p>':'')+'</article>';
+ }).join('');
+}
+
 async function sendTestTicketEmail(){
  if(!s.admin)return toast('Sign in as an administrator first');
  const button=document.getElementById('testTicketEmailBtn'),status=document.getElementById('testTicketEmailStatus');
@@ -1284,12 +1323,15 @@ async function sendTestTicketEmail(){
 }
 function showAdminView(view){
  if(!s.admin)return;
- const analytics=view==='analytics';
- document.getElementById('adminOperationsView').style.display=analytics?'none':'block';
+ const analytics=view==='analytics',orders=view==='orders';
+ document.getElementById('adminOperationsView').style.display=(!analytics&&!orders)?'block':'none';
+ document.getElementById('adminOrdersView').style.display=orders?'block':'none';
  document.getElementById('adminAnalyticsView').style.display=analytics?'block':'none';
- document.getElementById('adminOpsTab').classList.toggle('active',!analytics);
+ document.getElementById('adminOpsTab').classList.toggle('active',!analytics&&!orders);
+ document.getElementById('adminOrdersTab').classList.toggle('active',orders);
  document.getElementById('adminAnalyticsTab').classList.toggle('active',analytics);
  if(analytics)renderAdminAnalytics();
+ if(orders){renderAdminOrders();loadAdminOrders().then(renderAdminOrders).catch(e=>{console.error(e);toast('Could not load orders')})}
 }
 function renderAdminAnalytics(){
  if(!s.admin)return;
