@@ -599,7 +599,124 @@ button[aria-busy="true"]::after{
 @media(prefers-reduced-motion:reduce){
  *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
 }
-</style></head><body><div class="app"><header class="top"><div class="brand" onclick="go('home')"><img class="mark swan-brand-logo" src="https://raw.githubusercontent.com/inventor8451l-glitch/Swan_tickets-/main/870092544_1795728860364990.jpg" alt="Swan Tickets logo" width="44" height="44" decoding="async"><div><b>SWAN <span>TICKETS</span></b><small>GO WHERE YOU FEEL</small></div></div><div class="top-actions"><button class="round search-trigger" aria-label="Search events" onclick="go('events');setTimeout(()=>document.getElementById('search')?.focus(),80)"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg></button><button class="round" aria-label="Your cart" onclick="go('cart')"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M1 1h4l2.7 13.1a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg></button></div></header><main>
+
+<style id="swan-clear-glass-refinement">
+:root{
+ --gold:#dcae55;--gold2:#f7d991;--gold-deep:#986522;
+ --text:#fffaf0;--muted:#c0c8d0;--line:rgba(247,217,145,.32);
+}
+body{
+ background:
+ radial-gradient(ellipse at 14% 0%,rgba(194,145,67,.24),transparent 42%),
+ radial-gradient(ellipse at 90% 26%,rgba(57,102,118,.18),transparent 35%),
+ linear-gradient(145deg,#0c1420 0%,#152131 48%,#0b121c 100%);
+}
+/* Thin, clear glass: the background remains visible through the surface. */
+.top{
+ top:8px;margin:8px 12px 0;padding:8px 13px;border-radius:17px;
+ background:rgba(15,24,36,.28);
+ border:1px solid rgba(255,239,203,.38);
+ backdrop-filter:blur(8px) saturate(125%);-webkit-backdrop-filter:blur(8px) saturate(125%);
+ box-shadow:0 7px 22px rgba(0,0,0,.13),inset 0 1px 0 rgba(255,255,255,.19);
+}
+.mark.swan-brand-logo{width:40px;height:40px;border-radius:12px}
+.round{
+ width:36px;height:36px;border-radius:12px;
+ background:rgba(255,255,255,.045);
+ border:1px solid rgba(247,217,145,.42);
+ backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);
+ box-shadow:inset 0 1px 0 rgba(255,255,255,.19),0 4px 10px rgba(0,0,0,.12);
+ color:#ffe5a8;
+}
+/* Compact floating navigation — not a wide, thick dock. */
+.bottom-nav{
+ width:min(270px,calc(100% - 76px))!important;
+ min-height:0!important;gap:3px!important;padding:5px!important;
+ border-radius:19px!important;
+ background:rgba(12,20,30,.25)!important;
+ border:1px solid rgba(255,239,203,.43)!important;
+ backdrop-filter:blur(9px) saturate(120%)!important;
+ -webkit-backdrop-filter:blur(9px) saturate(120%)!important;
+ box-shadow:0 8px 24px rgba(0,0,0,.2),inset 0 1px 0 rgba(255,255,255,.22)!important;
+}
+.bottom-nav button{
+ min-height:42px!important;padding:4px 3px!important;border-radius:13px!important;
+ font-size:9px!important;font-weight:700!important;letter-spacing:.025em;
+ color:rgba(255,249,236,.78)!important;
+}
+.bottom-nav button span{font-size:16px!important;line-height:1.1!important;margin-bottom:2px!important}
+.bottom-nav button.active{
+ color:#ffe6ad!important;border-color:rgba(255,224,161,.42)!important;
+ background:rgba(222,171,79,.13)!important;
+ box-shadow:inset 0 1px 0 rgba(255,255,255,.15)!important;
+}
+.floating-cart{
+ bottom:calc(72px + env(safe-area-inset-bottom))!important;
+ background:rgba(16,27,40,.35)!important;
+ border:1px solid rgba(247,217,145,.46)!important;
+ backdrop-filter:blur(8px) saturate(125%)!important;
+ -webkit-backdrop-filter:blur(8px) saturate(125%)!important;
+ box-shadow:0 8px 22px rgba(0,0,0,.2),inset 0 1px 0 rgba(255,255,255,.2)!important;
+}
+.fc-icon{background:rgba(220,174,85,.16)!important;color:#ffe3a2!important}
+.fc-total{color:#ffe2a0!important}
+/* Distinct, high-contrast button hierarchy. */
+.btn{
+ min-height:46px;padding:12px 19px;border-radius:13px;
+ border:1px solid rgba(255,229,176,.68);
+ background:linear-gradient(135deg,#ffe8ae 0%,#e7b95e 48%,#bd873b 100%);
+ color:#171b22;font-weight:850;letter-spacing:.015em;
+ text-shadow:0 1px rgba(255,255,255,.24);
+ box-shadow:0 5px 0 #805724,0 9px 20px rgba(184,128,47,.22),inset 0 1px 0 rgba(255,255,255,.72);
+ transition:transform .16s ease,box-shadow .16s ease,filter .16s ease;
+}
+.btn:hover{filter:brightness(1.07);box-shadow:0 5px 0 #805724,0 12px 24px rgba(184,128,47,.3),inset 0 1px 0 rgba(255,255,255,.8)}
+.btn:active{transform:translateY(3px);box-shadow:0 2px 0 #805724,0 4px 10px rgba(184,128,47,.18)}
+.btn.ghost{
+ color:#ffe9bd;border:1px solid rgba(247,217,145,.56);
+ background:rgba(255,255,255,.045);
+ text-shadow:none;
+ box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 4px 12px rgba(0,0,0,.12);
+ backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);
+}
+.btn.ghost:hover{background:rgba(247,217,145,.12);border-color:rgba(255,231,181,.8)}
+.btn.small{min-height:37px;padding:8px 13px;border-radius:11px}
+.btn.full{width:100%}
+.btn:disabled{box-shadow:none;filter:grayscale(.3);opacity:.58}
+.chip{background:rgba(255,255,255,.035);border-color:rgba(247,217,145,.28)}
+.chip.active{background:linear-gradient(135deg,#ffe9b7,#d5a24d);color:#1b2028;border-color:#f6d995}
+.price,.link,.eyebrow{color:#f4d28d}
+.section h2{color:#fff4dd}
+.glass,.card,.event-card{
+ background:rgba(255,255,255,.035);
+ border-color:rgba(247,217,145,.2);
+ box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 12px 30px rgba(0,0,0,.15);
+}
+.field input,.field select,.field textarea{
+ background:rgba(5,12,21,.28);border-color:rgba(247,217,145,.28);
+}
+#admin #adminlogin,#admin #dashboard>.glass,#admin .adminitem,#admin .scanner-panel{
+ background:rgba(255,255,255,.035);
+ border-color:rgba(247,217,145,.24);
+ box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 12px 28px rgba(0,0,0,.17);
+}
+#admin .stat{background:rgba(255,255,255,.025);border-color:rgba(247,217,145,.24)}
+#admin .stat b{color:#f7d991}
+@media(min-width:700px){
+ .bottom-nav{width:290px!important;bottom:15px!important}
+ .bottom-nav button{min-height:43px!important}
+ .floating-cart{bottom:20px!important}
+}
+@media(max-width:390px){
+ .bottom-nav{width:min(250px,calc(100% - 82px))!important}
+ .bottom-nav button{min-height:40px!important;font-size:8px!important}
+ .bottom-nav button span{font-size:15px!important}
+ .top{padding:7px 10px}
+}
+@media(prefers-reduced-motion:reduce){
+ .btn,.bottom-nav button,.round{transition:none!important}
+}
+</style></style></head><body><div class="app"><header class="top"><div class="brand" onclick="go('home')"><img class="mark swan-brand-logo" src="https://raw.githubusercontent.com/inventor8451l-glitch/Swan_tickets-/main/870092544_1795728860364990.jpg" alt="Swan Tickets logo" width="44" height="44" decoding="async"><div><b>SWAN <span>TICKETS</span></b><small>GO WHERE YOU FEEL</small></div></div><div class="top-actions"><button class="round search-trigger" aria-label="Search events" onclick="go('events');setTimeout(()=>document.getElementById('search')?.focus(),80)"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg></button><button class="round" aria-label="Your cart" onclick="go('cart')"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M1 1h4l2.7 13.1a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg></button></div></header><main>
 <section class="screen active" id="home"><div class="home-search"><input id="homeSearch" type="search" placeholder="Search events by title..." oninput="syncHomeSearch()"><button onclick="runHomeSearch()" aria-label="Search"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg></button></div><div class="featured-widget" id="featuredCarousel" aria-label="Featured events carousel"></div><div class="featured-dots" id="featuredDots" aria-label="Choose featured event"></div><div class="chips category-strip" id="homechips"></div><div class="section"><div><h2>Upcoming Events</h2></div><button class="link" onclick="go('events')">View all →</button></div><div class="grid home-event-grid" id="homeEventGrid"></div><div class="section"><div><h2>Trending Now</h2></div><button class="link" onclick="go('events')">View all →</button></div><div class="trending-wheel" id="trendingEventGrid" aria-label="Trending events carousel"><div class="wheel-track" id="trendingWheelTrack"></div><button class="wheel-control prev" onclick="moveTrending(-1)" aria-label="Previous trending event">‹</button><button class="wheel-control next" onclick="moveTrending(1)" aria-label="Next trending event">›</button><div class="wheel-dots" id="trendingWheelDots"></div></div></section>
 <section class="screen" id="events"><div class="eyebrow">The good stuff</div><h1 style="font:34px Georgia;margin:5px 0">Explore events</h1><input class="search" id="search" placeholder="Search events, venues..." oninput="renderEvents()"><div class="chips" id="eventchips"></div><div class="section"><div><div class="eyebrow">Discover what's on</div><h2>Coming up</h2></div><span class="muted" id="count"></span></div><div class="grid" id="eventgrid"></div></section>
 <section class="screen" id="detail"><button class="link" onclick="go('events')">← All events</button><div id="detailbody"></div></section>
